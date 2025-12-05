@@ -1007,60 +1007,64 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // ------- LOVE COUNTER LOGIC -------
+// ------- LOVE COUNTER LOGIC (calendar-accurate) -------
 
-    const yearsEl   = document.getElementById("years");
-    const monthsEl  = document.getElementById("months");
-    const daysEl    = document.getElementById("days");
-    const hoursEl   = document.getElementById("hours");
-    const minutesEl = document.getElementById("minutes");
-    const secondsEl = document.getElementById("seconds");
+const yearsEl   = document.getElementById("years");
+const monthsEl  = document.getElementById("months");
+const daysEl    = document.getElementById("days");
+const hoursEl   = document.getElementById("hours");
+const minutesEl = document.getElementById("minutes");
+const secondsEl = document.getElementById("seconds");
 
-    const startDate = new Date("2024-06-18T02:00:00-04:00"); // June 18 2024, 2:00 AM (NY time)
+// Met her: June 18, 2024 at 2:00 AM (NY time)
+const startDate = new Date("2024-06-18T02:00:00-04:00");
 
-    function updateLoveCounter() {
-      const now = new Date();
+function updateLoveCounter() {
+  let now = new Date();
+  if (now < startDate) now = startDate; // just in case
 
-      let years = now.getFullYear() - startDate.getFullYear();
-      let months = now.getMonth() - startDate.getMonth();
+  let years   = now.getFullYear() - startDate.getFullYear();
+  let months  = now.getMonth()    - startDate.getMonth();
+  let days    = now.getDate()     - startDate.getDate();
+  let hours   = now.getHours()    - startDate.getHours();
+  let minutes = now.getMinutes()  - startDate.getMinutes();
+  let seconds = now.getSeconds()  - startDate.getSeconds();
 
-      if (months < 0) {
-        years--;
-        months += 12;
-      }
+  // Fix negatives by "borrowing" like real time math
+  if (seconds < 0) {
+    seconds += 60;
+    minutes--;
+  }
+  if (minutes < 0) {
+    minutes += 60;
+    hours--;
+  }
+  if (hours < 0) {
+    hours += 24;
+    days--;
+  }
+  if (days < 0) {
+    // borrow days from previous month
+    const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); // day 0 = last day of previous month
+    days += prevMonth.getDate();
+    months--;
+  }
+  if (months < 0) {
+    months += 12;
+    years--;
+  }
 
-      const ref = new Date(startDate);
-      ref.setFullYear(startDate.getFullYear() + years);
-      ref.setMonth(startDate.getMonth() + months);
+  if (yearsEl)   yearsEl.textContent   = years;
+  if (monthsEl)  monthsEl.textContent  = months;
+  if (daysEl)    daysEl.textContent    = days;
+  if (hoursEl)   hoursEl.textContent   = hours;
+  if (minutesEl) minutesEl.textContent = minutes;
+  if (secondsEl) secondsEl.textContent = seconds;
+}
 
-      let diffMs = now - ref;
+updateLoveCounter();
+setInterval(updateLoveCounter, 1000);
 
-      const msInSecond = 1000;
-      const msInMinute = msInSecond * 60;
-      const msInHour   = msInMinute * 60;
-      const msInDay    = msInHour * 24;
-
-      const days = Math.floor(diffMs / msInDay);
-      diffMs -= days * msInDay;
-
-      const hours = Math.floor(diffMs / msInHour);
-      diffMs -= hours * msInHour;
-
-      const minutes = Math.floor(diffMs / msInMinute);
-      diffMs -= minutes * msInMinute;
-
-      const seconds = Math.floor(diffMs / msInSecond);
-
-      if (yearsEl)   yearsEl.textContent   = years;
-      if (monthsEl)  monthsEl.textContent  = months;
-      if (daysEl)    daysEl.textContent    = days;
-      if (hoursEl)   hoursEl.textContent   = hours;
-      if (minutesEl) minutesEl.textContent = minutes;
-      if (secondsEl) secondsEl.textContent = seconds;
-    }
-
-    updateLoveCounter();
-    setInterval(updateLoveCounter, 1000);
 
     // ------- SIMPLE VIRGO HOROSCOPE TEXT -------
 
