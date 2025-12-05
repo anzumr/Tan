@@ -532,7 +532,7 @@
       filter: drop-shadow(0 0 16px rgba(255, 0, 140, 0.95));
     }
 
-    /* -------- iOS MESSAGE NOTIFICATION -------- */
+    /* -------- iOS MESSAGE / WEATHER NOTIFICATIONS -------- */
 
     .ios-notification {
       width: 100%;
@@ -552,11 +552,15 @@
 
       opacity: 0;
       transform: translateY(-14px);
-      /* we'll use keyframes instead of transition for a nicer bounce */
     }
 
     .ios-notification.show {
       animation: notifSlideIn 0.45s ease-out forwards;
+    }
+
+    /* Slightly closer to the first notification */
+    #weatherNotification {
+      margin-top: 10px;
     }
 
     @keyframes notifSlideIn {
@@ -663,7 +667,22 @@
             <div class="notif-from">Anzum 🧔🏽‍♂️💕</div>
             <!-- ⭐ CHANGE THIS MESSAGE ANYTIME YOU WANT ⭐ -->
             <div class="notif-text" id="notifMessage">
-              “Good luck on your final today, my love. You’re going to do amazing. You’re brilliant, you’re beautiful, and I’m so proud of you. Go show them who you are. I believe in you more than anything. 💗”
+              “You just told that final who's boss! Now it's time to chillax and binge some teenwolf. We locking tommorow at noon!”
+            </div>
+          </div>
+        </div>
+
+        <!-- Weather app outfit notification -->
+        <div class="ios-notification" id="weatherNotification">
+          <div class="notif-icon" id="weatherNotifIcon">🌤️</div>
+          <div class="notif-content">
+            <div class="notif-header">
+              <span class="notif-app">Weather</span>
+              <span class="notif-time">today</span>
+            </div>
+            <div class="notif-from">Outfit check</div>
+            <div class="notif-text" id="weatherNotifText">
+              Checking your sky so I can dress you properly… 💭
             </div>
           </div>
         </div>
@@ -750,8 +769,11 @@
               <label class="chip"><input type="checkbox" name="day_bad_reasons[]" value="overstimulated"> Overstimulated</label>
               <label class="chip"><input type="checkbox" name="day_bad_reasons[]" value="hungry"> Hungry</label>
               <label class="chip"><input type="checkbox" name="day_bad_reasons[]" value="tired"> Tired</label>
-              <label class="chip"><input type="checkbox" name="day_bad_reasons[]" value="road rage"> Road rage</label>
-              <label class="chip"><input type="checkbox" name="day_bad_reasons[]" value="family"> Family</label>
+              <label class="chip"><input type="checkbox" name="day_bad_reasons[]" value="tummy"> Tummy</label>
+              <label class="chip"><input type="checkbox" name="day_bad_reasons[]" value="road rage"> Road Rage</label>
+              <label class="chip"><input type="checkbox" name="day_bad_reasons[]" value="mother"> Mother</label>
+              <label class="chip"><input type="checkbox" name="day_bad_reasons[]" value="father"> Father</label>
+              <label class="chip"><input type="checkbox" name="day_bad_reasons[]" value="brother"> Brother</label>
               <label class="chip"><input type="checkbox" name="day_bad_reasons[]" value="annoying person"> Annoying person</label>
               <label class="chip"><input type="checkbox" name="day_bad_reasons[]" value="anzum"> Anzum</label>
             </div>
@@ -774,7 +796,7 @@
             </div>
           </div>
 
-          <!-- Hungry 0–3 -->
+        <!-- Hungry 0–3 -->
           <div id="hungerHungryFollowup" class="small followup-box">
             You’re hungry 😭 What are you in the mood to eat / craving?
             <textarea name="hunger_craving"></textarea>
@@ -904,6 +926,65 @@
     const weatherMain = document.getElementById("weatherMain");
     const weatherSub  = document.getElementById("weatherSub");
 
+    const weatherNotification = document.getElementById("weatherNotification");
+    const weatherNotifText = document.getElementById("weatherNotifText");
+    const weatherNotifIcon = document.getElementById("weatherNotifIcon");
+
+    function getWeatherAdvice(code, tempF) {
+      const isCold = tempF <= 45;
+      const isChilly = tempF > 45 && tempF <= 60;
+      const isWarm = tempF > 60 && tempF <= 80;
+      const isHot  = tempF > 80;
+
+      const rainyCodes = [51,53,55,56,57,61,63,65,66,67,80,81,82];
+      const snowyCodes = [71,73,75,77,85,86];
+      const stormCodes = [95,96,99];
+      const fogCodes   = [45,48];
+
+      if (rainyCodes.includes(code)) {
+        return "It’s rainy — bring an umbrella and something cozy, please ☔";
+      }
+      if (snowyCodes.includes(code)) {
+        return "It’s snowy/icy — bundle up in a warm coat and good shoes, please ❄️";
+      }
+      if (stormCodes.includes(code)) {
+        return "Stormy weather — dress comfy and drive extra carefully ⚡";
+      }
+      if (fogCodes.includes(code)) {
+        return "It’s foggy — soft layers and something warm just in case 🌫️";
+      }
+
+      if (isCold) {
+        return "It’s cold today — wear layers, a warm coat, and protect your little hands and ears 🧣";
+      }
+      if (isChilly) {
+        return "A little chilly — a cute sweater or light jacket will be perfect today 🧥";
+      }
+      if (isWarm) {
+        return "It’s going to be a beautiful day — something light and comfy will be perfect 🌤️";
+      }
+      if (isHot) {
+        return "It’s hot today — dress light, stay hydrated, and don’t overheat, please ☀️";
+      }
+
+      return "Dress comfy and cozy in whatever makes you feel safe today 🤍";
+    }
+
+    function pickWeatherIcon(code, tempF) {
+      const rainyCodes = [51,53,55,56,57,61,63,65,66,67,80,81,82];
+      const snowyCodes = [71,73,75,77,85,86];
+      const stormCodes = [95,96,99];
+      const fogCodes   = [45,48];
+
+      if (rainyCodes.includes(code)) return "☔";
+      if (snowyCodes.includes(code)) return "❄️";
+      if (stormCodes.includes(code)) return "⛈️";
+      if (fogCodes.includes(code))   return "🌫️";
+      if (tempF > 80)                return "🌞";
+      if (tempF <= 45)               return "🧣";
+      return "🌤️";
+    }
+
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -914,23 +995,55 @@
               if (data && data.current && typeof data.current.temperature_2m === "number") {
                 const c = data.current.temperature_2m;
                 const f = Math.round(c * 9/5 + 32);
+                const code = data.current.weather_code;
+
                 weatherMain.textContent = `${f}°F near you`;
                 weatherSub.textContent  = "Thanks for letting me check your sky 🥹";
+
+                if (weatherNotification && weatherNotifText && weatherNotifIcon) {
+                  weatherNotifText.textContent = getWeatherAdvice(code, f);
+                  weatherNotifIcon.textContent = pickWeatherIcon(code, f);
+                  weatherNotification.classList.add("show");
+                }
               } else {
                 weatherMain.textContent = "Weather unavailable";
+                if (weatherNotification && weatherNotifText && weatherNotifIcon) {
+                  weatherNotifText.textContent =
+                    "Couldn’t load weather, but dress comfy and bring a light layer just in case 🤍";
+                  weatherNotifIcon.textContent = "🌥️";
+                  weatherNotification.classList.add("show");
+                }
               }
             })
             .catch(() => {
               weatherMain.textContent = "Weather unavailable";
+              if (weatherNotification && weatherNotifText && weatherNotifIcon) {
+                weatherNotifText.textContent =
+                  "Couldn’t load weather, but dress comfy and maybe keep a jacket nearby 🌥️";
+                weatherNotifIcon.textContent = "🌥️";
+                weatherNotification.classList.add("show");
+              }
             });
         },
         () => {
           weatherMain.textContent = "Location blocked";
           weatherSub.textContent  = "If you allow location, I’ll show it here 💕";
+          if (weatherNotification && weatherNotifText && weatherNotifIcon) {
+            weatherNotifText.textContent =
+              "Couldn’t check your exact weather, but a cute layered outfit is always safe 🧥";
+            weatherNotifIcon.textContent = "🌤️";
+            weatherNotification.classList.add("show");
+          }
         }
       );
     } else {
       weatherMain.textContent = "No geolocation support";
+      if (weatherNotification && weatherNotifText && weatherNotifIcon) {
+        weatherNotifText.textContent =
+          "I can’t check your weather, but dress in comfy layers just in case 🤍";
+        weatherNotifIcon.textContent = "🌥️";
+        weatherNotification.classList.add("show");
+      }
     }
 
     // ------- PASSWORD LOGIC -------
