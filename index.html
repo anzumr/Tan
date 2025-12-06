@@ -52,6 +52,87 @@
       z-index: 10;
     }
 
+    /* ---------- TOP-RIGHT PHOTOS APP BUTTON ---------- */
+
+    .top-right-photos-btn {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      display: none; /* hidden until unlocked + questions page */
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      z-index: 50;
+      text-align: center;
+      font-family: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      animation: jiggle 1.4s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    .top-right-photos-btn.visible {
+      display: flex; /* shown after JS adds .visible */
+    }
+
+    .photos-icon-wrapper {
+      position: relative;
+    }
+
+    .top-right-photos-btn img {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+      display: block;
+      transition: transform 0.2s ease;
+    }
+
+    .photos-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fdfdfd;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.45);
+    }
+
+    /* red badge: +X photos */
+    .photos-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ff3b30;
+      color: #fff;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: none; /* hidden if 0 */
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+      padding: 0 6px;
+      border: 1px solid #fff;
+      animation: badgePulse 1.9s ease-in-out infinite;
+    }
+
+    /* bounce on hover */
+    .top-right-photos-btn:hover img {
+      transform: translateY(-4px) scale(1.06);
+    }
+
+    @keyframes jiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(1.2deg); }
+      50% { transform: rotate(-1.2deg); }
+      75% { transform: rotate(0.8deg); }
+    }
+
+    @keyframes badgePulse {
+      0%, 100% { transform: scale(1); }
+      40% { transform: scale(1.12); }
+      70% { transform: scale(0.98); }
+    }
+
     /* ---------------- LOCK SCREEN (iPhone style) ---------------- */
 
     #lockScreen {
@@ -695,10 +776,24 @@
       .lock-time { font-size: 52px; }
       .lock-widgets { flex-direction: column; }
       .survey-card { padding: 20px 14px 22px; }
+      .top-right-photos-btn {
+        top: 12px;
+        right: 12px;
+      }
     }
   </style>
 </head>
 <body>
+
+  <!-- PHOTOS APP BUTTON (TOP RIGHT, HIDDEN UNTIL UNLOCKED QUESTIONS PAGE) -->
+  <div class="top-right-photos-btn" onclick="location.href='photos.html'">
+    <div class="photos-icon-wrapper">
+      <!-- local iPhone Photos-style icon -->
+      <img src="photos-app-icon.png" alt="Photos app">
+      <span class="photos-badge">+0</span>
+    </div>
+    <span class="photos-label">Photos</span>
+  </div>
 
   <!-- BETTA FISH CURSOR IMAGE -->
   <img id="bettaCursor" class="betta-cursor" src="betta-fish.png" alt="Red betta fish cursor" />
@@ -739,7 +834,7 @@
             <div class="notif-from">Anzum 🧔🏽‍♂️💕</div>
             <!-- ⭐ CHANGE THIS MESSAGE ANYTIME YOU WANT ⭐ -->
             <div class="notif-text" id="notifMessage">
-              “You just told that final who's boss! Now it's time to chillax and binge some teenwolf. We locking tommorow at noon!”
+              “You just told that final who's boss! Now it's time to chillax and binge some teenwolf. We locking in tommorow at noon!”
             </div>
           </div>
         </div>
@@ -967,6 +1062,36 @@
     const loveLetter   = document.getElementById("loveLetter");
     const surveyPage   = document.getElementById("surveyPage");
     const bettaCursor  = document.getElementById("bettaCursor");
+    const photosButton = document.querySelector(".top-right-photos-btn");
+
+    // ------- UPDATE PHOTOS BADGE FROM STORED COUNT -------
+
+    function updatePhotosBadgeFromStorage() {
+      const badge = document.querySelector(".photos-badge");
+      if (!badge) return;
+
+      let count = 0;
+      try {
+        const raw = localStorage.getItem("photoCount");
+        if (raw) {
+          const parsed = parseInt(raw, 10);
+          if (!Number.isNaN(parsed)) {
+            count = parsed;
+          }
+        }
+      } catch (e) {
+        count = 0;
+      }
+
+      if (count > 0) {
+        badge.textContent = "+" + count;
+        badge.style.display = "flex";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", updatePhotosBadgeFromStorage);
 
     // Little helper so betta fish "reacts" when followups appear
     function pulseFish() {
@@ -1007,64 +1132,63 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-// ------- LOVE COUNTER LOGIC (calendar-accurate) -------
+    // ------- LOVE COUNTER LOGIC (calendar-accurate) -------
 
-const yearsEl   = document.getElementById("years");
-const monthsEl  = document.getElementById("months");
-const daysEl    = document.getElementById("days");
-const hoursEl   = document.getElementById("hours");
-const minutesEl = document.getElementById("minutes");
-const secondsEl = document.getElementById("seconds");
+    const yearsEl   = document.getElementById("years");
+    const monthsEl  = document.getElementById("months");
+    const daysEl    = document.getElementById("days");
+    const hoursEl   = document.getElementById("hours");
+    const minutesEl = document.getElementById("minutes");
+    const secondsEl = document.getElementById("seconds");
 
-// Met her: June 18, 2024 at 2:00 AM (NY time)
-const startDate = new Date("2024-06-18T02:00:00-04:00");
+    // Met her: June 18, 2024 at 2:00 AM (NY time)
+    const startDate = new Date("2024-06-18T02:00:00-04:00");
 
-function updateLoveCounter() {
-  let now = new Date();
-  if (now < startDate) now = startDate; // just in case
+    function updateLoveCounter() {
+      let now = new Date();
+      if (now < startDate) now = startDate; // just in case
 
-  let years   = now.getFullYear() - startDate.getFullYear();
-  let months  = now.getMonth()    - startDate.getMonth();
-  let days    = now.getDate()     - startDate.getDate();
-  let hours   = now.getHours()    - startDate.getHours();
-  let minutes = now.getMinutes()  - startDate.getMinutes();
-  let seconds = now.getSeconds()  - startDate.getSeconds();
+      let years   = now.getFullYear() - startDate.getFullYear();
+      let months  = now.getMonth()    - startDate.getMonth();
+      let days    = now.getDate()     - startDate.getDate();
+      let hours   = now.getHours()    - startDate.getHours();
+      let minutes = now.getMinutes()  - startDate.getMinutes();
+      let seconds = now.getSeconds()  - startDate.getSeconds();
 
-  // Fix negatives by "borrowing" like real time math
-  if (seconds < 0) {
-    seconds += 60;
-    minutes--;
-  }
-  if (minutes < 0) {
-    minutes += 60;
-    hours--;
-  }
-  if (hours < 0) {
-    hours += 24;
-    days--;
-  }
-  if (days < 0) {
-    // borrow days from previous month
-    const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); // day 0 = last day of previous month
-    days += prevMonth.getDate();
-    months--;
-  }
-  if (months < 0) {
-    months += 12;
-    years--;
-  }
+      // Fix negatives by "borrowing" like real time math
+      if (seconds < 0) {
+        seconds += 60;
+        minutes--;
+      }
+      if (minutes < 0) {
+        minutes += 60;
+        hours--;
+      }
+      if (hours < 0) {
+        hours += 24;
+        days--;
+      }
+      if (days < 0) {
+        // borrow days from previous month
+        const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0); // day 0 = last day of previous month
+        days += prevMonth.getDate();
+        months--;
+      }
+      if (months < 0) {
+        months += 12;
+        years--;
+      }
 
-  if (yearsEl)   yearsEl.textContent   = years;
-  if (monthsEl)  monthsEl.textContent  = months;
-  if (daysEl)    daysEl.textContent    = days;
-  if (hoursEl)   hoursEl.textContent   = hours;
-  if (minutesEl) minutesEl.textContent = minutes;
-  if (secondsEl) secondsEl.textContent = seconds;
-}
+      if (yearsEl)   yearsEl.textContent   = years;
+      if (monthsEl)  monthsEl.textContent  = months;
+      if (daysEl)    daysEl.textContent    = days;
+      if (hoursEl)   hoursEl.textContent   = hours;
+      if (minutesEl) minutesEl.textContent = minutes;
+      if (secondsEl) secondsEl.textContent = seconds;
+    }
 
-updateLoveCounter();
-setInterval(updateLoveCounter, 1000);
-
+    updateLoveCounter();
+    setInterval(updateLoveCounter, 1000);
 
     // ------- SIMPLE VIRGO HOROSCOPE TEXT -------
 
@@ -1238,6 +1362,11 @@ setInterval(updateLoveCounter, 1000);
     document.getElementById("continueBtn").addEventListener("click", () => {
       loveLetter.style.display = "none";
       surveyPage.style.display = "block";
+
+      // show Photos app button once she's on the questions page
+      if (photosButton) {
+        photosButton.classList.add("visible");
+      }
     });
 
     // ------- SLIDERS + CONDITIONAL FOLLOW-UPS -------
