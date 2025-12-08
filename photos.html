@@ -242,7 +242,8 @@
         <div class="scrapbook-tag">🌈 Scrapbook mode · tap any photo to zoom in</div>
       </div>
 
-      <a href="index.html" class="back-btn">← Back to questions</a>
+      <!-- changed to go directly to questions mode -->
+      <a href="index.html#questions" class="back-btn">← Back to questions</a>
     </div>
 
     <div id="gallery" class="gallery-grid"></div>
@@ -286,9 +287,8 @@
       "2025-01-18-city.jpg",
       "2025-02-01-barrister.jpg",
       "2025-07-06-tao.jpg",
-"2025-10-18-met-rooftop.jpg",
-"2025-10-31-lighthouse.jpg"
-
+      "2025-10-18-met-rooftop.jpg",
+      "2025-10-31-lighthouse.jpg"
     ];
 
     // Format date to "Month Day, Year"
@@ -302,6 +302,13 @@
 
     // Build gallery dynamically
     const gallery = document.getElementById("gallery");
+
+    // store photo count for badge on main page
+    try {
+      localStorage.setItem("photoCount", String(photosData.length));
+    } catch (e) {
+      // ignore if localStorage not available
+    }
 
     photosData
       .sort((a, b) => new Date(b.slice(0, 10)) - new Date(a.slice(0, 10)))
