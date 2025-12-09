@@ -261,7 +261,7 @@
   </div>
 
   <script>
-    // ⭐ YOUR files — cleaned + corrected
+    // ⭐ Your files
     const photosData = [
       "2025-04-04-diversity.jpg",
       "2025-04-17-timeout.jpg",
@@ -275,6 +275,8 @@
       "2024-07-20-panorama-room.jpg",
       "2024-07-25-cafe.jpg",
       "2024-07-28-gantry.jpg",
+      "2024-09-06-bday.jpg",
+      "2024-09-20-san-generero.jpg",
       "2024-10-05-jubilee.jpg",
       "2024-10-12-halloween-bar.jpg",
       "2024-10-14-pumpkin-patch.jpg",
@@ -284,12 +286,23 @@
       "2024-11-11-christmas.jpg",
       "2024-11-23-aabea.jpg",
       "2024-11-27-bryant-park.jpg",
+      "2024-12-31-nye.jpg",
       "2025-01-18-city.jpg",
       "2025-02-01-barrister.jpg",
+      "2025-02-28-cuddle.jpg",
+      "2025-04-03-salsa.jpg",
       "2025-07-06-tao.jpg",
+      "2025-09-14-cj-hendry.jpg",
       "2025-10-18-met-rooftop.jpg",
-      "2025-10-31-lighthouse.jpg"
+      "2025-10-31-lighthouse.jpg",
+      "2025-11-22-karaoke.jpg"
     ];
+
+    // ✅ Safe: parse date from filename as LOCAL date (no UTC bug)
+    function getDateFromFilename(filename) {
+      const [year, month, day] = filename.split("-").slice(0, 3).map(Number);
+      return new Date(year, month - 1, day); // local time
+    }
 
     // Format date to "Month Day, Year"
     function formatPrettyDate(date) {
@@ -300,7 +313,6 @@
       });
     }
 
-    // Build gallery dynamically
     const gallery = document.getElementById("gallery");
 
     // store photo count for badge on main page
@@ -310,11 +322,12 @@
       // ignore if localStorage not available
     }
 
+    // ✅ Use safe date parsing for sort + display
     photosData
-      .sort((a, b) => new Date(b.slice(0, 10)) - new Date(a.slice(0, 10)))
+      .sort((a, b) => getDateFromFilename(b) - getDateFromFilename(a))
       .forEach((file, i) => {
-        const dateStr = file.slice(0, 10);
-        const pretty = formatPrettyDate(new Date(dateStr));
+        const dateObj = getDateFromFilename(file);
+        const pretty = formatPrettyDate(dateObj);
 
         const card = document.createElement("div");
         card.className = "photo-card";
