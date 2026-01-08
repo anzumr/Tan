@@ -21,11 +21,7 @@
       --rounded: 24px;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont;
@@ -38,7 +34,6 @@
       align-items: center;
       justify-content: center;
       color: #111;
-      /* we KEEP the normal cursor so you see arrow + fish */
     }
 
     /* Shared overlay style */
@@ -70,13 +65,9 @@
       transform-origin: center;
     }
 
-    .top-right-photos-btn.visible {
-      display: flex; /* shown after JS adds .visible */
-    }
+    .top-right-photos-btn.visible { display: flex; }
 
-    .photos-icon-wrapper {
-      position: relative;
-    }
+    .photos-icon-wrapper { position: relative; }
 
     .top-right-photos-btn img {
       width: 52px;
@@ -116,9 +107,7 @@
     }
 
     /* bounce on hover */
-    .top-right-photos-btn:hover img {
-      transform: translateY(-4px) scale(1.06);
-    }
+    .top-right-photos-btn:hover img { transform: translateY(-4px) scale(1.06); }
 
     @keyframes jiggle {
       0%, 100% { transform: rotate(0deg); }
@@ -158,10 +147,7 @@
       align-items: center;
     }
 
-    .lock-top {
-      text-align: center;
-      margin-top: 40px;
-    }
+    .lock-top { text-align: center; margin-top: 40px; }
 
     .lock-time {
       font-size: 64px;
@@ -176,11 +162,7 @@
       vertical-align: top;
     }
 
-    .lock-date {
-      margin-top: 6px;
-      font-size: 16px;
-      opacity: 0.85;
-    }
+    .lock-date { margin-top: 6px; font-size: 16px; opacity: 0.85; }
 
     .lock-widgets {
       margin-top: 40px;
@@ -211,29 +193,11 @@
       opacity: 0.8;
     }
 
-    .widget-main {
-      font-size: 13px;
-      font-weight: 500;
-    }
+    .widget-main { font-size: 13px; font-weight: 500; }
+    .widget-sub  { font-size: 11px; opacity: 0.9; }
 
-    .widget-sub {
-      font-size: 11px;
-      opacity: 0.9;
-    }
-
-    .lock-bottom-text {
-      text-align: center;
-      font-size: 14px;
-      opacity: 0.9;
-      margin-bottom: 6px;
-    }
-
-    .lock-home-indicator {
-      width: 120px;
-      height: 4px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.85);
-    }
+    .lock-bottom-text { text-align: center; font-size: 14px; opacity: 0.9; margin-bottom: 6px; }
+    .lock-home-indicator { width: 120px; height: 4px; border-radius: 999px; background: rgba(255,255,255,0.85); }
 
     /* -------- PASSWORD SCREEN -------- */
 
@@ -255,16 +219,8 @@
       border: 1px solid rgba(255,255,255,0.16);
     }
 
-    .pw-title {
-      font-size: 20px;
-      margin-bottom: 6px;
-    }
-
-    .pw-sub {
-      font-size: 13px;
-      opacity: 0.9;
-      margin-bottom: 16px;
-    }
+    .pw-title { font-size: 20px; margin-bottom: 6px; }
+    .pw-sub   { font-size: 13px; opacity: 0.9; margin-bottom: 16px; }
 
     .pw-input {
       width: 100%;
@@ -290,12 +246,7 @@
       font-weight: 500;
     }
 
-    .pw-error {
-      margin-top: 8px;
-      font-size: 12px;
-      color: #ffd0d0;
-      min-height: 16px;
-    }
+    .pw-error { margin-top: 8px; font-size: 12px; color: #ffd0d0; min-height: 16px; }
 
     /* -------- LOVE LETTER SCREEN -------- */
 
@@ -316,10 +267,7 @@
       animation: fadeIn 0.9s ease;
     }
 
-    .letter-card h2 {
-      font-size: 22px;
-      margin-bottom: 12px;
-    }
+    .letter-card h2 { font-size: 22px; margin-bottom: 12px; }
 
     .letter-card p {
       font-size: 15px;
@@ -363,27 +311,11 @@
       overflow-y: auto;
     }
 
-    .survey-header {
-      text-align: center;
-      margin-bottom: 16px;
-    }
+    .survey-header { text-align: center; margin-bottom: 16px; }
+    .survey-header h1 { font-size: 22px; margin-bottom: 4px; }
+    .survey-header p { font-size: 14px; color: #555; }
 
-    .survey-header h1 {
-      font-size: 22px;
-      margin-bottom: 4px;
-    }
-
-    .survey-header p {
-      font-size: 14px;
-      color: #555;
-    }
-
-    .photo-holder {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      margin-bottom: 12px;
-    }
+    .photo-holder { width: 100%; display: flex; justify-content: center; margin-bottom: 12px; }
 
     #couplePhoto {
       width: 160px;
@@ -394,26 +326,12 @@
       border: 4px solid #fff;
     }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      font-size: 14px;
-    }
+    form { display: flex; flex-direction: column; gap: 18px; font-size: 14px; }
 
-    .q {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 8px;
-      width: 100%;
-    }
+    .q { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; width: 100%; }
 
-    label {
-      font-weight: 600;
-    }
+    label { font-weight: 600; }
 
-    /* iOS-style inputs & textareas */
     textarea,
     input[type="text"],
     select {
@@ -427,10 +345,7 @@
       transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
     }
 
-    textarea {
-      min-height: 70px;
-      resize: vertical;
-    }
+    textarea { min-height: 70px; resize: vertical; }
 
     textarea:focus,
     input[type="text"]:focus,
@@ -441,19 +356,9 @@
       transform: translateY(-1px);
     }
 
-    .small {
-      font-size: 12px;
-      color: #777;
-    }
+    .small { font-size: 12px; color: #777; }
 
-    /* sliders */
-
-    .slider-row {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      width: 100%;
-    }
+    .slider-row { display: flex; flex-direction: column; gap: 6px; width: 100%; }
 
     input[type="range"] {
       width: 100%;
@@ -477,17 +382,9 @@
       cursor: pointer;
     }
 
-    .slider-label {
-      font-size: 13px;
-      color: #555;
-    }
+    .slider-label { font-size: 13px; color: #555; }
 
-    .chip-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
+    .chip-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
 
     .chip {
       display: inline-flex;
@@ -501,15 +398,9 @@
       cursor: pointer;
     }
 
-    .chip input {
-      margin: 0;
-    }
+    .chip input { margin: 0; }
 
-    .hidden {
-      display: none;
-    }
-
-    /* Follow-up boxes under the question, with fade-in */
+    .hidden { display: none; }
 
     .followup-box {
       width: 100%;
@@ -526,11 +417,7 @@
       transform: translateY(0);
     }
 
-    .followup-box textarea {
-      margin-top: 6px;
-    }
-
-    /* submit button */
+    .followup-box textarea { margin-top: 6px; }
 
     #submitBtn {
       width: 100%;
@@ -553,8 +440,6 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Congrats overlay for eating */
-
     #fullCongrats {
       position: fixed;
       inset: 0;
@@ -575,15 +460,8 @@
       box-shadow: 0 14px 34px rgba(0,0,0,0.25);
     }
 
-    .congrats-card h3 {
-      font-size: 20px;
-      margin-bottom: 8px;
-    }
-
-    .congrats-card p {
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
+    .congrats-card h3 { font-size: 20px; margin-bottom: 8px; }
+    .congrats-card p { font-size: 14px; margin-bottom: 12px; }
 
     #closeCongrats {
       padding: 8px 14px;
@@ -609,11 +487,9 @@
       transition: transform 0.1s linear, filter 0.2s ease;
     }
 
-    .betta-cursor.excited {
-      filter: drop-shadow(0 0 16px rgba(255, 0, 140, 0.95));
-    }
+    .betta-cursor.excited { filter: drop-shadow(0 0 16px rgba(255, 0, 140, 0.95)); }
 
-    /* -------- iOS MESSAGE / WEATHER / LAW TIPS NOTIFICATIONS -------- */
+    /* -------- iOS NOTIFICATIONS -------- */
 
     .ios-notification {
       width: 100%;
@@ -630,32 +506,20 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.45);
       font-family: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 13px;
-
       opacity: 0;
       transform: translateY(-14px);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .ios-notification.show {
-      animation: notifSlideIn 0.45s ease-out forwards;
-    }
+    .ios-notification.show { animation: notifSlideIn 0.45s ease-out forwards; }
 
-    #weatherNotification {
-      margin-top: 10px;
-    }
+    #weatherNotification { margin-top: 10px; }
 
     @keyframes notifSlideIn {
-      0% {
-        opacity: 0;
-        transform: translateY(-14px);
-      }
-      60% {
-        opacity: 1;
-        transform: translateY(2px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      0% { opacity: 0; transform: translateY(-14px); }
+      60% { opacity: 1; transform: translateY(2px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
     .notif-icon {
@@ -667,44 +531,18 @@
       align-items: center;
       justify-content: center;
       font-size: 18px;
+      flex: 0 0 auto;
     }
 
-    .notif-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .notif-header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 11px;
-      opacity: 0.8;
-    }
-
-    .notif-app {
-      font-weight: 600;
-    }
-
-    .notif-from {
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .notif-text {
-      font-size: 13px;
-      line-height: 1.3;
-    }
+    .notif-content { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .notif-header  { display: flex; justify-content: space-between; font-size: 11px; opacity: 0.8; }
+    .notif-app     { font-weight: 600; }
+    .notif-from    { font-size: 14px; font-weight: 600; }
+    .notif-text    { font-size: 13px; line-height: 1.3; }
 
     /* -------- LOVE COUNTER INSIDE CARD -------- */
 
-    .love-counter-inside {
-      width: 100%;
-      display: flex;
-      justify-content: flex-start;
-      margin-bottom: 10px;
-    }
+    .love-counter-inside { width: 100%; display: flex; justify-content: flex-start; margin-bottom: 10px; }
 
     .love-counter {
       background: linear-gradient(135deg, #ffb6e6, #ffd9ff);
@@ -731,23 +569,10 @@
       font-size: 18px;
     }
 
-    .love-counter-text {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+    .love-counter-text { display: flex; flex-direction: column; gap: 2px; }
+    .love-counter-title { font-weight: 600; font-size: 0.85rem; color: #8a145a; }
 
-    .love-counter-title {
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: #8a145a;
-    }
-
-    .love-counter-values {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 3px 6px;
-    }
+    .love-counter-values { display: flex; flex-wrap: wrap; gap: 3px 6px; }
 
     .love-chip {
       background: rgba(255,255,255,0.85);
@@ -759,17 +584,11 @@
       box-shadow: 0 3px 8px rgba(0,0,0,0.08);
     }
 
-    .love-chip .value {
-      font-weight: 600;
-      margin-right: 2px;
-    }
+    .love-chip .value { font-weight: 600; margin-right: 2px; }
 
-    @keyframes floaty {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-3px); }
-    }
+    @keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
-    /* -------- 🐹 HAMSTER PET (BOTTOM OF QUESTIONS PAGE) -------- */
+    /* -------- 🐹 HAMSTER PET -------- */
 
     .hamster-pet {
       margin-top: 2rem;
@@ -782,10 +601,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .hamster-pet * {
-      -webkit-tap-highlight-color: transparent;
-      outline: none;
-    }
+    .hamster-pet * { -webkit-tap-highlight-color: transparent; outline: none; }
 
     .hamster-body {
       display: flex;
@@ -803,10 +619,7 @@
       -webkit-user-select: none;
     }
 
-    .hamster-face {
-      font-size: 46px;
-      line-height: 1;
-    }
+    .hamster-face { font-size: 46px; line-height: 1; }
 
     .hamster-emote {
       position: absolute;
@@ -819,10 +632,7 @@
       transition: opacity 0.2s ease, transform 0.2s ease;
     }
 
-    .hamster-emote.show {
-      opacity: 1;
-      transform: translateY(-4px);
-    }
+    .hamster-emote.show { opacity: 1; transform: translateY(-4px); }
 
     .hamster-stats {
       font-size: 0.75rem;
@@ -858,9 +668,7 @@
       -webkit-user-select: none;
     }
 
-    .hamster-item:active {
-      cursor: grabbing;
-    }
+    .hamster-item:active { cursor: grabbing; }
 
     .hamster-name-row {
       display: flex;
@@ -870,9 +678,7 @@
       font-size: 0.75rem;
     }
 
-    .hamster-name-label {
-      opacity: 0.85;
-    }
+    .hamster-name-label { opacity: 0.85; }
 
     .hamster-name-input {
       border-radius: 999px;
@@ -895,27 +701,11 @@
       -webkit-user-select: none;
     }
 
-    /* Animation classes */
-    .hamster-body.idle {
-      animation: hamsterIdle 3s ease-in-out infinite;
-    }
-
-    .hamster-body.happy {
-      animation: hamsterHappyHop 0.35s ease-in-out 3;
-    }
-
-    .hamster-body.spin {
-      animation: hamsterSpin 0.5s linear 1;
-    }
-
-    .hamster-body.sleep {
-      animation: hamsterSleep 4s ease-in-out infinite;
-      filter: brightness(0.9);
-    }
-
-    .hamster-body.run {
-      animation: hamsterRunAcross 0.9s ease-out;
-    }
+    .hamster-body.idle { animation: hamsterIdle 3s ease-in-out infinite; }
+    .hamster-body.happy { animation: hamsterHappyHop 0.35s ease-in-out 3; }
+    .hamster-body.spin { animation: hamsterSpin 0.5s linear 1; }
+    .hamster-body.sleep { animation: hamsterSleep 4s ease-in-out infinite; filter: brightness(0.9); }
+    .hamster-body.run { animation: hamsterRunAcross 0.9s ease-out; }
 
     @keyframes hamsterIdle {
       0% { transform: translateY(0) rotate(0deg); }
@@ -949,22 +739,227 @@
       100% { transform: translateX(60px) translateY(-4px); }
     }
 
-    /* small screens */
+    /* -------- iMessage Thread Overlay -------- */
 
+    #textThreadOverlay {
+      display: none;
+      z-index: 60;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(10px);
+    }
+
+    .thread-card{
+      width: 100%;
+      max-width: 420px;
+      height: min(680px, 88vh);
+      background: rgba(18,18,18,0.92);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 26px;
+      overflow: hidden;
+      box-shadow: 0 18px 55px rgba(0,0,0,0.55);
+      display: flex;
+      flex-direction: column;
+      font-family: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      backdrop-filter: blur(18px);
+      transform: translateY(10px);
+      opacity: 0;
+      animation: threadIn 0.22s ease-out forwards;
+    }
+
+    @keyframes threadIn {
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .thread-top{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      color:#fff;
+    }
+
+    .thread-name{
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.2px;
+    }
+
+    .thread-close{
+      border:none;
+      background: rgba(255,255,255,0.10);
+      color:#fff;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-size: 16px;
+    }
+
+    .thread-body{
+      padding: 14px;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    .bubble-row{ display:flex; width:100%; }
+    .bubble-row.right{ justify-content: flex-end; }
+
+    .bubble{
+      max-width: 86%;
+      border-radius: 20px;
+      padding: 10px 10px 12px;
+      line-height: 1.35;
+      font-size: 14px;
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+    }
+
+    .bubble-blue{
+      background: linear-gradient(180deg, rgba(0,122,255,0.95), rgba(0,92,220,0.95));
+    }
+
+    .bubble-img-wrap{
+      width: 100%;
+      border-radius: 16px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.20);
+      margin-bottom: 10px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .bubble-img-wrap::after{
+      content: "Tap to view";
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      font-size: 11px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.18);
+      opacity: 0.9;
+    }
+
+    .bubble-img{
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      display:block;
+    }
+
+    .bubble-text{ white-space: normal; }
+
+    .thread-time{
+      margin-top: 6px;
+      text-align:center;
+      font-size: 11px;
+      opacity: 0.75;
+      color:#fff;
+    }
+
+    /* -------- FULLSCREEN PHOTO VIEWER -------- */
+
+    #photoViewer {
+      display: none;
+      z-index: 80;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(12px);
+      padding: 10px;
+    }
+
+    .viewer-top {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 81;
+      pointer-events: none;
+    }
+
+    .viewer-pill {
+      pointer-events: auto;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-family: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 13px;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      user-select: none;
+    }
+
+    .viewer-close {
+      pointer-events: auto;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #fff;
+      font-size: 18px;
+    }
+
+    .viewer-stage {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+    }
+
+    .viewer-img {
+      max-width: min(980px, 96vw);
+      max-height: 86vh;
+      width: auto;
+      height: auto;
+      border-radius: 18px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      transform: scale(0.98);
+      opacity: 0;
+      animation: viewerIn 0.18s ease-out forwards;
+      user-select: none;
+      -webkit-user-drag: none;
+      cursor: zoom-out;
+    }
+
+    @keyframes viewerIn {
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* simple zoom toggle */
+    .viewer-img.zoomed {
+      max-width: none;
+      max-height: none;
+      width: min(1400px, 160vw);
+      height: auto;
+      cursor: zoom-out;
+    }
+
+    /* small screens */
     @media (max-width: 480px) {
       .lock-time { font-size: 52px; }
       .lock-widgets { flex-direction: column; }
       .survey-card { padding: 20px 14px 22px; }
-      .top-right-photos-btn {
-        top: 12px;
-        right: 12px;
-      }
+      .top-right-photos-btn { top: 12px; right: 12px; }
+      .bubble-img{ height: 220px; }
+      .viewer-img.zoomed { width: 180vw; }
     }
   </style>
 </head>
 <body>
 
-  <!-- PHOTOS APP BUTTON (TOP RIGHT, HIDDEN UNTIL UNLOCKED QUESTIONS PAGE) -->
+  <!-- PHOTOS APP BUTTON -->
   <div class="top-right-photos-btn" onclick="location.href='photos.html'">
     <div class="photos-icon-wrapper">
       <img src="photos-app-icon.png" alt="Photos app">
@@ -999,8 +994,8 @@
           </div>
         </div>
 
-        <!-- iMessage-style notification from Anzum -->
-        <div class="ios-notification" id="iosNotification">
+        <!-- iMessage-style notification from Anzum (tap to open) -->
+        <div class="ios-notification" id="iosNotification" role="button" tabindex="0" aria-label="Open message">
           <div class="notif-icon">💬</div>
           <div class="notif-content">
             <div class="notif-header">
@@ -1008,8 +1003,14 @@
               <span class="notif-time">now</span>
             </div>
             <div class="notif-from">Anzum 🧔🏽‍♂️💕</div>
-            <div class="notif-text" id="notifMessage">
-              “Good morning baby girl☀️ Hope you have a great day my love. Good luck on your final! I know your going to do amazing ”
+
+            <div class="notif-text" style="display:flex; gap:10px; align-items:center;">
+              <img
+                src="photobooth-strip.jpg"
+                alt="Photobooth strip preview"
+                style="width:46px;height:46px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.25);flex:0 0 auto;"
+              />
+              <span id="notifMessage">These photos feel like a quiet confession 🤍</span>
             </div>
           </div>
         </div>
@@ -1029,22 +1030,7 @@
           </div>
         </div>
 
-        <!-- ⚖️ Law school tips notification -->
-        <div class="ios-notification" id="lawTipsNotification">
-          <div class="notif-icon">⚖️</div>
-          <div class="notif-content">
-            <div class="notif-header">
-              <span class="notif-app">Law Finals</span>
-              <span class="notif-time">today</span>
-            </div>
-            <div class="notif-from">Study tip</div>
-            <div class="notif-text">
-              Local Law 11 = facade safety inspections on tall NYC buildings.  
-              Lien Law 36 = owner can demand list of subs/suppliers.  
-              Lien Law 38 = contractor must give that list (“books”) so payments are protected.
-            </div>
-          </div>
-        </div>
+      
 
       </div>
 
@@ -1064,6 +1050,50 @@
       <button id="pwBtn" class="pw-button">Continue</button>
       <div id="pwError" class="pw-error"></div>
       <div style="margin-top:10px;font-size:12px;opacity:0.9;">(I’ll tell you the password 🫶)</div>
+    </div>
+  </div>
+
+  <!-- TEXT THREAD OVERLAY (opens from lock-screen notification) -->
+  <div id="textThreadOverlay" class="overlay">
+    <div class="thread-card" role="dialog" aria-label="Message thread">
+      <div class="thread-top">
+        <div class="thread-name">Anzum 🧔🏽‍♂️💕</div>
+        <button id="closeThread" class="thread-close" aria-label="Close">✕</button>
+      </div>
+
+      <div class="thread-body">
+        <div class="bubble-row right">
+          <div class="bubble bubble-blue">
+            <div class="bubble-img-wrap" id="photoBubble" title="Tap to expand">
+              <img src="photobooth-strip.jpg" alt="Photobooth strip" class="bubble-img">
+            </div>
+            <div class="bubble-text">
+          These photos feel like a quiet confession 🤍<br><br>
+In the top and bottom rows, it’s us. Soft, playful, safe in each other’s arms 🫶✨<br><br>
+But the middle row is where my heart gets caught. Watching you slowly step into the frame feels exactly like the way you stepped into my life 📸💞<br><br>
+Every time you come closer, the world gets quieter. Every time you touch me, I feel chosen 🌙💫<br><br>
+Loving you feels like coming home in ways I didn’t know I was missing 🏡❤️<br><br>
+And once you’re here, I never want to imagine a moment without you ♾️💗<br><br>
+You don’t just stand beside me. You live in my heart 💘
+
+            </div>
+          </div>
+        </div>
+
+        <div class="thread-time">Delivered</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULLSCREEN PHOTO VIEWER -->
+  <div id="photoViewer" class="overlay" aria-label="Photo viewer">
+    <div class="viewer-top">
+      <div class="viewer-pill">💬 From Anzum • Photobooth</div>
+      <button id="closeViewer" class="viewer-close" aria-label="Close photo">✕</button>
+    </div>
+
+    <div class="viewer-stage">
+      <img id="viewerImg" class="viewer-img" src="photobooth-strip.jpg" alt="Photobooth strip full view">
     </div>
   </div>
 
@@ -1088,7 +1118,7 @@
     </div>
   </div>
 
-  <!-- CONGRATS OVERLAY WHEN FULL / 7–10 HUNGER -->
+  <!-- CONGRATS OVERLAY -->
   <div id="fullCongrats">
     <div class="congrats-card">
       <h3>Yay, you ate! 🥰</h3>
@@ -1109,24 +1139,12 @@
           <div class="love-counter-text">
             <div class="love-counter-title">Time since I met you 🫶</div>
             <div class="love-counter-values">
-              <div class="love-chip">
-                <span class="value" id="years">0</span><span class="label">yrs</span>
-              </div>
-              <div class="love-chip">
-                <span class="value" id="months">0</span><span class="label">mos</span>
-              </div>
-              <div class="love-chip">
-                <span class="value" id="days">0</span><span class="label">days</span>
-              </div>
-              <div class="love-chip">
-                <span class="value" id="hours">0</span><span class="label">hrs</span>
-              </div>
-              <div class="love-chip">
-                <span class="value" id="minutes">0</span><span class="label">mins</span>
-              </div>
-              <div class="love-chip">
-                <span class="value" id="seconds">0</span><span class="label">secs</span>
-              </div>
+              <div class="love-chip"><span class="value" id="years">0</span><span class="label">yrs</span></div>
+              <div class="love-chip"><span class="value" id="months">0</span><span class="label">mos</span></div>
+              <div class="love-chip"><span class="value" id="days">0</span><span class="label">days</span></div>
+              <div class="love-chip"><span class="value" id="hours">0</span><span class="label">hrs</span></div>
+              <div class="love-chip"><span class="value" id="minutes">0</span><span class="label">mins</span></div>
+              <div class="love-chip"><span class="value" id="seconds">0</span><span class="label">secs</span></div>
             </div>
           </div>
         </div>
@@ -1237,10 +1255,9 @@
         </div>
 
         <button id="submitBtn" type="submit">Send to me ❤️</button>
-
       </form>
 
-      <!-- 🐹 Full-body hamster at bottom of questions page -->
+      <!-- 🐹 hamster -->
       <div class="hamster-pet">
         <div class="hamster-body idle" id="hamster">
           <div class="hamster-face">🐹</div>
@@ -1275,6 +1292,16 @@
     const bettaCursor  = document.getElementById("bettaCursor");
     const photosButton = document.querySelector(".top-right-photos-btn");
 
+    // Thread + Viewer
+    const iosNotification = document.getElementById("iosNotification");
+    const textThreadOverlay = document.getElementById("textThreadOverlay");
+    const closeThread = document.getElementById("closeThread");
+    const photoBubble = document.getElementById("photoBubble");
+
+    const photoViewer = document.getElementById("photoViewer");
+    const closeViewer = document.getElementById("closeViewer");
+    const viewerImg = document.getElementById("viewerImg");
+
     // ------- UPDATE PHOTOS BADGE FROM STORED COUNT -------
 
     function updatePhotosBadgeFromStorage() {
@@ -1288,9 +1315,7 @@
           const parsed = parseInt(raw, 10);
           if (!Number.isNaN(parsed)) count = parsed;
         }
-      } catch (e) {
-        count = 0;
-      }
+      } catch (e) { count = 0; }
 
       if (count > 0) {
         badge.textContent = "+" + count;
@@ -1299,15 +1324,12 @@
         badge.style.display = "none";
       }
     }
-
     document.addEventListener("DOMContentLoaded", updatePhotosBadgeFromStorage);
 
     function pulseFish() {
       if (!bettaCursor) return;
       bettaCursor.classList.add("excited");
-      setTimeout(() => {
-        bettaCursor.classList.remove("excited");
-      }, 300);
+      setTimeout(() => bettaCursor.classList.remove("excited"), 300);
     }
 
     lockScreen.addEventListener("click", () => {
@@ -1315,7 +1337,7 @@
       passwordPage.style.display = "flex";
     });
 
-    // ------- CLOCK (12-hour) + DATE -------
+    // ------- CLOCK -------
 
     const lockTimeEl = document.getElementById("lockTime");
     const lockAmPmEl = document.getElementById("lockAmPm");
@@ -1339,7 +1361,7 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // ------- LOVE COUNTER LOGIC -------
+    // ------- LOVE COUNTER -------
 
     const yearsEl   = document.getElementById("years");
     const monthsEl  = document.getElementById("months");
@@ -1361,27 +1383,15 @@
       let minutes = now.getMinutes()  - startDate.getMinutes();
       let seconds = now.getSeconds()  - startDate.getSeconds();
 
-      if (seconds < 0) {
-        seconds += 60;
-        minutes--;
-      }
-      if (minutes < 0) {
-        minutes += 60;
-        hours--;
-      }
-      if (hours < 0) {
-        hours += 24;
-        days--;
-      }
+      if (seconds < 0) { seconds += 60; minutes--; }
+      if (minutes < 0) { minutes += 60; hours--; }
+      if (hours < 0) { hours += 24; days--; }
       if (days < 0) {
         const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
         days += prevMonth.getDate();
         months--;
       }
-      if (months < 0) {
-        months += 12;
-        years--;
-      }
+      if (months < 0) { months += 12; years--; }
 
       if (yearsEl)   yearsEl.textContent   = years;
       if (monthsEl)  monthsEl.textContent  = months;
@@ -1522,7 +1532,6 @@
     // ------- PASSWORD LOGIC -------
 
     const PASSWORD = "0618";
-
     const pwInput  = document.getElementById("pwInput");
     const pwBtn    = document.getElementById("pwBtn");
     const pwError  = document.getElementById("pwError");
@@ -1539,9 +1548,7 @@
     });
 
     pwInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        pwBtn.click();
-      }
+      if (e.key === "Enter") pwBtn.click();
     });
 
     // ------- LOVE LETTER CONTINUE -------
@@ -1552,6 +1559,23 @@
       if (photosButton) photosButton.classList.add("visible");
       window.location.hash = "questions";
     });
+
+    // ------- CONFETTI -------
+
+    const fullCongrats = document.getElementById("fullCongrats");
+    const closeCongrats = document.getElementById("closeCongrats");
+    let hasCelebrated = false;
+
+    function showCongratsOnce() {
+      if (hasCelebrated) return;
+      hasCelebrated = true;
+      fullCongrats.style.display = "flex";
+      if (window.confetti) {
+        confetti({ particleCount: 160, spread: 70, origin: { y: 0.6 } });
+      }
+    }
+
+    closeCongrats.addEventListener("click", () => { fullCongrats.style.display = "none"; });
 
     // ------- SLIDERS -------
 
@@ -1621,31 +1645,7 @@
     treatSlider.addEventListener("input", updateTreatUI);
     updateTreatUI();
 
-    // ------- CONFETTI -------
-
-    const fullCongrats = document.getElementById("fullCongrats");
-    const closeCongrats = document.getElementById("closeCongrats");
-    let hasCelebrated = false;
-
-    function showCongratsOnce() {
-      if (hasCelebrated) return;
-      hasCelebrated = true;
-      fullCongrats.style.display = "flex";
-
-      if (window.confetti) {
-        confetti({
-          particleCount: 160,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      }
-    }
-
-    closeCongrats.addEventListener("click", () => {
-      fullCongrats.style.display = "none";
-    });
-
-    // ------- BETTA FISH FOLLOWING CURSOR (with chase mode) -------
+    // ------- BETTA FISH FOLLOWING CURSOR -------
 
     let chaseMode = false;
 
@@ -1685,26 +1685,15 @@
         }
         requestAnimationFrame(animateBetta);
       }
-
       animateBetta();
     }
 
-    // ------- iMessage & Law Tips Notifications Fade/Slide In -------
+    // ------- NOTIFICATIONS FADE IN -------
 
-    const iosNotification = document.getElementById("iosNotification");
     const lawTipsNotification = document.getElementById("lawTipsNotification");
-
     window.addEventListener("load", () => {
-      if (iosNotification) {
-        setTimeout(() => {
-          iosNotification.classList.add("show");
-        }, 1200);
-      }
-      if (lawTipsNotification) {
-        setTimeout(() => {
-          lawTipsNotification.classList.add("show");
-        }, 1800);
-      }
+      if (iosNotification) setTimeout(() => iosNotification.classList.add("show"), 1200);
+      if (lawTipsNotification) setTimeout(() => lawTipsNotification.classList.add("show"), 1800);
     });
 
     // ------- HANDLE #questions DIRECT NAV -------
@@ -1718,8 +1707,97 @@
         if (photosButton) photosButton.classList.add("visible");
       }
     }
-
     document.addEventListener("DOMContentLoaded", handleHashNavigation);
+
+    // ------- iMESSAGE THREAD OPEN/CLOSE -------
+
+    function openThread() {
+      if (!textThreadOverlay) return;
+      textThreadOverlay.style.display = "flex";
+      pulseFish();
+      // prevent background scroll on mobile
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeThreadOverlay() {
+      if (!textThreadOverlay) return;
+      textThreadOverlay.style.display = "none";
+      document.body.style.overflow = "";
+    }
+
+    if (iosNotification) {
+      iosNotification.style.cursor = "pointer";
+      iosNotification.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openThread();
+      });
+      iosNotification.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") openThread();
+      });
+    }
+
+    if (closeThread) closeThread.addEventListener("click", closeThreadOverlay);
+
+    if (textThreadOverlay) {
+      textThreadOverlay.addEventListener("click", (e) => {
+        if (e.target === textThreadOverlay) closeThreadOverlay();
+      });
+    }
+
+    // ------- PHOTO VIEWER OPEN/CLOSE + ZOOM -------
+
+    function openViewer() {
+      if (!photoViewer) return;
+      photoViewer.style.display = "flex";
+      if (viewerImg) viewerImg.classList.remove("zoomed");
+      pulseFish();
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeViewerFn() {
+      if (!photoViewer) return;
+      photoViewer.style.display = "none";
+      if (viewerImg) viewerImg.classList.remove("zoomed");
+      // keep thread open; just restore overflow if thread is closed too
+      if (!textThreadOverlay || textThreadOverlay.style.display !== "flex") {
+        document.body.style.overflow = "";
+      }
+    }
+
+    if (photoBubble) {
+      photoBubble.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openViewer();
+      });
+    }
+
+    if (closeViewer) closeViewer.addEventListener("click", closeViewerFn);
+
+    if (photoViewer) {
+      photoViewer.addEventListener("click", (e) => {
+        // click outside image closes
+        if (e.target === photoViewer) closeViewerFn();
+      });
+    }
+
+    if (viewerImg) {
+      // click image toggles zoom (simple)
+      viewerImg.addEventListener("click", (e) => {
+        e.stopPropagation();
+        viewerImg.classList.toggle("zoomed");
+      });
+    }
+
+    // ESC closes viewer first, then thread
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (photoViewer && photoViewer.style.display === "flex") {
+          closeViewerFn();
+        } else if (textThreadOverlay && textThreadOverlay.style.display === "flex") {
+          closeThreadOverlay();
+        }
+      }
+    });
 
     // ------- 🐹 HAMSTER PET LOGIC (name + animations + chase betta) -------
 
@@ -1754,20 +1832,16 @@
         hamster.classList.remove("idle", "happy", "spin", "sleep", "run");
       }
 
-      function setMood(text) {
-        moodSpan.textContent = text;
-      }
+      function setMood(text) { moodSpan.textContent = text; }
 
-      function updatePetCountDisplay() {
-        petCountSpan.textContent = petCount;
-      }
+      function updatePetCountDisplay() { petCountSpan.textContent = petCount; }
 
       function showEmote(symbol) {
         emote.textContent = symbol;
         emote.classList.remove("show");
         void emote.offsetWidth;
         emote.classList.add("show");
-        setTimeout(() => { emote.classList.remove("show"); }, 650);
+        setTimeout(() => emote.classList.remove("show"), 650);
       }
 
       function goIdle() {
@@ -1800,22 +1874,15 @@
           showEmote("⭐");
         }
 
-        if (type === "happy" || type === "spin") {
-          hamster.addEventListener(
-            "animationend",
-            function handler() {
-              hamster.removeEventListener("animationend", handler);
-              if (!chasePlaying) goIdle();
-            }
-          );
-        }
+        hamster.addEventListener("animationend", function handler() {
+          hamster.removeEventListener("animationend", handler);
+          if (!chasePlaying) goIdle();
+        });
       }
 
       function playChaseScene() {
         if (!bettaCursor || chasePlaying) {
-          if (!bettaCursor) {
-            triggerAnimation("happy");
-          }
+          if (!bettaCursor) triggerAnimation("happy");
           return;
         }
 
@@ -1823,11 +1890,7 @@
         chaseMode = true;
         clearAnimClasses();
         hamster.classList.add("run");
-        setMood(
-          hamsterName
-            ? `${hamsterName} is chasing the betta!`
-            : "Chasing the betta!"
-        );
+        setMood(hamsterName ? `${hamsterName} is chasing the betta!` : "Chasing the betta!");
         showEmote("🏃");
 
         const windowW = window.innerWidth;
@@ -1850,11 +1913,7 @@
           bettaCursor.style.top = fishY + "px";
           bettaCursor.style.transform = "scaleX(-1) rotate(0deg)";
 
-          setMood(
-            hamsterName
-              ? `${hamsterName} caught the betta and is hugging him 🥹`
-              : "Caught the betta and hugging him 🥹"
-          );
+          setMood(hamsterName ? `${hamsterName} caught the betta and is hugging him 🥹` : "Caught the betta and hugging him 🥹");
           showEmote("🤍");
 
           setTimeout(() => {
@@ -1868,7 +1927,6 @@
         }, 900);
       }
 
-      // Click = pet
       hamster.addEventListener("click", () => {
         petCount++;
         localStorage.setItem(HAMSTER_KEY, petCount.toString());
@@ -1879,23 +1937,19 @@
         resetSleepTimer();
       });
 
-      // Double click = chase betta & hug
       hamster.addEventListener("dblclick", (e) => {
         e.preventDefault();
         playChaseScene();
         resetSleepTimer();
       });
 
-      // Drag & drop food / water
       document.querySelectorAll(".hamster-item").forEach((item) => {
         item.addEventListener("dragstart", (e) => {
           e.dataTransfer.setData("itemType", item.dataset.item || "");
         });
       });
 
-      hamster.addEventListener("dragover", (e) => {
-        e.preventDefault();
-      });
+      hamster.addEventListener("dragover", (e) => e.preventDefault());
 
       hamster.addEventListener("drop", (e) => {
         e.preventDefault();
@@ -1903,32 +1957,20 @@
         if (!itemType) return;
 
         if (itemType === "food") {
-          setMood(
-            hamsterName
-              ? `${hamsterName} says: yummy!`
-              : "Yummy!"
-          );
+          setMood(hamsterName ? `${hamsterName} says: yummy!` : "Yummy!");
           showEmote("🍓");
         } else if (itemType === "water") {
-          setMood(
-            hamsterName
-              ? `${hamsterName} feels hydrated 💧`
-              : "Hydrated!"
-          );
+          setMood(hamsterName ? `${hamsterName} feels hydrated 💧` : "Hydrated!");
           showEmote("💧");
         }
         resetSleepTimer();
       });
 
-      // Wake up on hover
       hamster.addEventListener("mouseenter", () => {
-        if (hamster.classList.contains("sleep")) {
-          goIdle();
-        }
+        if (hamster.classList.contains("sleep")) goIdle();
         resetSleepTimer();
       });
 
-      // Name input logic (saved to localStorage)
       nameInput.addEventListener("input", () => {
         hamsterName = nameInput.value.trim();
         localStorage.setItem(NAME_KEY, hamsterName);
@@ -1936,7 +1978,6 @@
         goIdle();
       });
 
-      // Init
       updatePetCountDisplay();
       goIdle();
       resetSleepTimer();
