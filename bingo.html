@@ -17,6 +17,12 @@
       --purple1:#b084f7;
       --card-bg:rgba(255,255,255,0.92);
       --rounded:22px;
+
+      /* Theme accents */
+      --me1:#ff2a2a;   /* blood red */
+      --me2:#0b0b0f;   /* near-black */
+      --her1:#ff78c8;
+      --her2:#b084f7;
     }
     *{ box-sizing:border-box; }
 
@@ -55,7 +61,7 @@
       opacity:0.95;
     }
 
-    /* UPDATED: login bar (replaces sync code UI) */
+    /* Google login bar */
     .loginbar{
       display:flex;
       gap:10px;
@@ -85,6 +91,11 @@
       border:1px solid rgba(0,0,0,0.10);
     }
 
+    /* Optional: “tough” red button variant (used on Anzum board actions if you want) */
+    .btn.me{
+      background:linear-gradient(90deg, var(--me1), var(--me2));
+    }
+
     #syncStatus{
       text-align:center;
       margin:0 0 14px 0;
@@ -109,7 +120,10 @@
       border-radius:var(--rounded);
       box-shadow:0 18px 45px rgba(0,0,0,0.18);
       padding:16px;
+      position: relative;
+      overflow: hidden;
     }
+
     .board h2{
       text-align:center;
       font-family:"SF Pro Display",system-ui;
@@ -183,6 +197,78 @@
       flex-wrap:wrap;
     }
 
+    /* -------------------- THEMED BOARDS -------------------- */
+
+    /* Anzum theme (tough / scary: red + black) */
+    .board-me{
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(248,248,252,0.92));
+      border: 1px solid rgba(0,0,0,0.10);
+    }
+    .board-me::before{
+      content:"";
+      position:absolute;
+      inset:-40px;
+      background:
+        radial-gradient(circle at 18% 22%, rgba(255, 42, 42, 0.22), transparent 50%),
+        radial-gradient(circle at 82% 30%, rgba(0, 0, 0, 0.22), transparent 55%),
+        radial-gradient(circle at 35% 85%, rgba(255, 120, 0, 0.14), transparent 60%),
+        repeating-linear-gradient(
+          135deg,
+          rgba(0,0,0,0.045) 0 7px,
+          rgba(0,0,0,0) 7px 16px
+        );
+      filter: contrast(1.05);
+      z-index:0;
+      pointer-events:none;
+    }
+    .board-me > *{ position:relative; z-index:1; }
+
+    .board-me h2{
+      color:#12070a;
+      text-shadow:none;
+    }
+
+    .board-me .cell{
+      border:1px solid rgba(0,0,0,0.14);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+    }
+    .board-me .cell:hover{
+      box-shadow: 0 14px 26px rgba(0,0,0,0.14);
+    }
+    .board-me .cell.done{
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255, 42, 42, 0.20),
+          rgba(255, 42, 42, 0.20) 6px,
+          rgba(0, 0, 0, 0.20) 6px,
+          rgba(0, 0, 0, 0.20) 12px
+        );
+      text-decoration: line-through;
+      opacity: 0.82;
+    }
+    .board-me .cell[contenteditable="true"]:focus{
+      box-shadow: 0 0 0 2px rgba(255, 42, 42, 0.55);
+    }
+
+    /* Anika theme (kept as your default soft pink/purple) */
+    .board-her{
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,240,250,0.92));
+      border: 1px solid rgba(255,140,214,0.22);
+    }
+    .board-her::before{
+      content:"";
+      position:absolute;
+      inset:-40px;
+      background:
+        radial-gradient(circle at 15% 25%, rgba(255, 140, 214, 0.22), transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(176, 132, 247, 0.18), transparent 55%),
+        radial-gradient(circle at 30% 85%, rgba(255, 205, 240, 0.22), transparent 60%);
+      z-index:0;
+      pointer-events:none;
+    }
+    .board-her > *{ position:relative; z-index:1; }
+
     /* Win overlay */
     #bingoWinOverlay{
       position:fixed;
@@ -224,7 +310,7 @@
       <p>Type goals. Tap a square to cross it out. Finish the year together.</p>
     </header>
 
-    <!-- UPDATED: Google login bar (replaces sync code UI) -->
+    <!-- Google login bar -->
     <div class="loginbar">
       <button id="loginBtn" class="btn" type="button">Sign in with Google</button>
       <button id="logoutBtn" class="btn secondary" type="button" style="display:none;">Sign out</button>
@@ -232,7 +318,7 @@
     <div id="syncStatus"></div>
 
     <section class="boards" id="boardsArea" style="display:none;">
-      <div class="board">
+      <div class="board board-me">
         <h2>Anzum’s Board</h2>
         <div class="grid" id="board-me" aria-label="Anzum 2026 goals bingo board"></div>
         <div class="actions">
@@ -240,7 +326,7 @@
         </div>
       </div>
 
-      <div class="board">
+      <div class="board board-her">
         <h2>Anika’s Board</h2>
         <div class="grid" id="board-partner" aria-label="Anika 2026 goals bingo board"></div>
         <div class="actions">
@@ -257,7 +343,7 @@
     const SIZE = 25;
     const DONECOUNT_KEY = "bingoDoneCount";  // index.html reads this for the badge
 
-    // UPDATED: no more user-entered sync code. We keep a fixed room id.
+    // Fixed room id
     const ROOM_ID = "tanzum-2026-bingo";
     function roomScopeKey() { return `room:${ROOM_ID}`; }
 
@@ -297,7 +383,7 @@
     }
     window.updateBadgeCount = updateBadgeCount;
 
-    // UPDATED: completed lines store now only keyed by the fixed room
+    // Completed lines store
     const LINES_KEY = "bingoLinesV2";
     function getCompletedLineIds() {
       let store = {};
@@ -335,7 +421,6 @@
       }, { once: true });
     }
 
-    // Expose celebration so Firebase module can call it on remote updates
     function checkAndCelebrate(boardKey, whoLabel) {
       const cells = getCells(boardKey);
       const done = cells.map(c => c.classList.contains("done"));
@@ -442,7 +527,7 @@
     });
   </script>
 
-  <!-- UPDATED: Firebase + Google Login + Firestore realtime sync -->
+  <!-- Firebase + Google Login + Firestore realtime sync -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
     import {
@@ -461,7 +546,7 @@
 
     function setStatus(msg){ if (statusEl) statusEl.textContent = msg || ""; }
 
-    // YOUR Firebase config (from your message)
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCcbJqHpYRPFGgmgBh5grAhR5aDniDZRyg",
       authDomain: "tanzum-5c20b.firebaseapp.com",
@@ -472,7 +557,7 @@
       measurementId: "G-FF64TZSZ2V"
     };
 
-    // SAME room for both of you (no codes, no extra steps)
+    // SAME room for both of you
     const ROOM_ID = "tanzum-2026-bingo";
 
     const app = initializeApp(firebaseConfig);
@@ -519,7 +604,7 @@
 
       applyingRemote = false;
 
-      // Badge + celebration check (remote changes should count + can celebrate)
+      // Badge + celebration check
       if (window.updateBadgeCount) window.updateBadgeCount();
       if (window.__bingoCelebrateForBoard) {
         const who = boardKey === "me" ? "Anzum" : "Anika";
@@ -609,9 +694,7 @@
   </script>
 
   <!--
-    IMPORTANT: Set Firestore rules in Firebase Console to restrict to you two.
-
-    Firestore -> Rules:
+    Firestore rules (example - restrict to your emails):
 
     rules_version = '2';
     service cloud.firestore {
@@ -627,7 +710,7 @@
     }
 
     Also: Authentication -> Settings -> Authorized domains
-    Add: your GitHub pages domain (username.github.io) and your custom domain if you use one.
+    Add: your GitHub pages domain (username.github.io) and your custom domain (if any).
   -->
 </body>
 </html>
