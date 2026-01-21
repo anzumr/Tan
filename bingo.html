@@ -96,6 +96,19 @@
       background:linear-gradient(90deg, var(--me1), var(--me2));
     }
 
+    /* NEW: per-board toolbar row */
+    .board-toolbar{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin: 0 0 12px;
+      flex-wrap:wrap;
+    }
+    .btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
+
     #syncStatus{
       text-align:center;
       margin:0 0 14px 0;
@@ -164,6 +177,13 @@
       box-shadow:0 6px 16px rgba(0,0,0,0.15);
     }
 
+    /* NEW: show "editing" state without forcing contenteditable always on */
+    .board.is-editing .cell{
+      cursor:text;
+      user-select:text;
+      -webkit-user-select:text;
+    }
+
     .cell[contenteditable="true"]{
       cursor:text;
       user-select:text;
@@ -199,75 +219,103 @@
 
     /* -------------------- THEMED BOARDS -------------------- */
 
-    /* Anzum theme (tough / scary: red + black) */
+    /* YOUR BOARD: Flame theme (replaces prior tough/scary look) */
     .board-me{
-      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(248,248,252,0.92));
-      border: 1px solid rgba(0,0,0,0.10);
+      background:
+        radial-gradient(1200px 520px at 18% 12%, rgba(255,170,70,0.35), transparent 55%),
+        radial-gradient(900px 520px at 82% 28%, rgba(255,40,0,0.28), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,248,252,0.92));
+      border: 1px solid rgba(255,120,20,0.22);
     }
     .board-me::before{
       content:"";
       position:absolute;
-      inset:-40px;
+      inset:-45px;
       background:
-        radial-gradient(circle at 18% 22%, rgba(255, 42, 42, 0.22), transparent 50%),
-        radial-gradient(circle at 82% 30%, rgba(0, 0, 0, 0.22), transparent 55%),
-        radial-gradient(circle at 35% 85%, rgba(255, 120, 0, 0.14), transparent 60%),
-        repeating-linear-gradient(
-          135deg,
-          rgba(0,0,0,0.045) 0 7px,
-          rgba(0,0,0,0) 7px 16px
-        );
-      filter: contrast(1.05);
+        radial-gradient(circle at 20% 78%, rgba(255,190,90,0.26), transparent 55%),
+        radial-gradient(circle at 55% 86%, rgba(255,70,0,0.22), transparent 60%),
+        radial-gradient(circle at 80% 70%, rgba(255,230,140,0.18), transparent 60%);
+      filter: blur(16px);
+      opacity:.95;
       z-index:0;
       pointer-events:none;
+      animation: flamePulse 3.2s ease-in-out infinite;
+    }
+    @keyframes flamePulse{
+      0%,100%{ transform: translateY(0) scale(1); opacity:.88; }
+      50%{ transform: translateY(-10px) scale(1.02); opacity:1; }
     }
     .board-me > *{ position:relative; z-index:1; }
-
-    .board-me h2{
-      color:#12070a;
-      text-shadow:none;
-    }
+    .board-me h2{ color:#2a0c06; text-shadow:none; }
 
     .board-me .cell{
-      border:1px solid rgba(0,0,0,0.14);
+      border:1px solid rgba(255,120,20,0.22);
       box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+      background: linear-gradient(180deg, rgba(255,170,70,0.10), rgba(255,70,0,0.06));
     }
-    .board-me .cell:hover{
-      box-shadow: 0 14px 26px rgba(0,0,0,0.14);
-    }
+    .board-me .cell:hover{ box-shadow: 0 14px 26px rgba(0,0,0,0.14); }
     .board-me .cell.done{
       background:
         repeating-linear-gradient(
           -45deg,
-          rgba(255, 42, 42, 0.20),
-          rgba(255, 42, 42, 0.20) 6px,
-          rgba(0, 0, 0, 0.20) 6px,
-          rgba(0, 0, 0, 0.20) 12px
+          rgba(255, 120, 20, 0.22),
+          rgba(255, 120, 20, 0.22) 6px,
+          rgba(255, 40, 0, 0.18) 6px,
+          rgba(255, 40, 0, 0.18) 12px
         );
       text-decoration: line-through;
       opacity: 0.82;
     }
     .board-me .cell[contenteditable="true"]:focus{
-      box-shadow: 0 0 0 2px rgba(255, 42, 42, 0.55);
+      box-shadow: 0 0 0 2px rgba(255, 90, 20, 0.55);
     }
 
-    /* Anika theme (kept as your default soft pink/purple) */
+    /* ANIKA BOARD: Pink flower theme (more floral than before) */
     .board-her{
-      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,240,250,0.92));
-      border: 1px solid rgba(255,140,214,0.22);
+      background:
+        radial-gradient(900px 520px at 18% 16%, rgba(255,160,210,0.26), transparent 55%),
+        radial-gradient(820px 520px at 82% 28%, rgba(255,210,235,0.24), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,240,250,0.92));
+      border: 1px solid rgba(255,140,214,0.26);
     }
     .board-her::before{
       content:"";
       position:absolute;
       inset:-40px;
-      background:
-        radial-gradient(circle at 15% 25%, rgba(255, 140, 214, 0.22), transparent 50%),
-        radial-gradient(circle at 85% 30%, rgba(176, 132, 247, 0.18), transparent 55%),
-        radial-gradient(circle at 30% 85%, rgba(255, 205, 240, 0.22), transparent 60%);
-      z-index:0;
       pointer-events:none;
+      z-index:0;
+      opacity:.95;
+      background:
+        radial-gradient(circle at 14% 30%, rgba(255,170,210,0.24) 0 18%, transparent 19%),
+        radial-gradient(circle at 28% 65%, rgba(255,130,190,0.20) 0 16%, transparent 17%),
+        radial-gradient(circle at 55% 25%, rgba(255,220,240,0.22) 0 20%, transparent 21%),
+        radial-gradient(circle at 72% 62%, rgba(255,150,205,0.20) 0 17%, transparent 18%),
+        radial-gradient(circle at 88% 35%, rgba(255,230,245,0.18) 0 16%, transparent 17%);
+      filter: blur(10px);
     }
     .board-her > *{ position:relative; z-index:1; }
+
+    .board-her .cell{
+      border:1px solid rgba(255,150,205,0.22);
+      background: linear-gradient(180deg, rgba(255,170,220,0.10), rgba(255,120,180,0.06));
+      box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+    }
+    .board-her .cell:hover{ box-shadow: 0 14px 26px rgba(0,0,0,0.14); }
+    .board-her .cell.done{
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255, 140, 214, 0.22),
+          rgba(255, 140, 214, 0.22) 6px,
+          rgba(176, 132, 247, 0.18) 6px,
+          rgba(176, 132, 247, 0.18) 12px
+        );
+      text-decoration: line-through;
+      opacity: 0.82;
+    }
+    .board-her .cell[contenteditable="true"]:focus{
+      box-shadow: 0 0 0 2px rgba(255, 140, 214, 0.55);
+    }
 
     /* Win overlay */
     #bingoWinOverlay{
@@ -320,6 +368,13 @@
     <section class="boards" id="boardsArea" style="display:none;">
       <div class="board board-me">
         <h2>Anzum’s Board</h2>
+
+        <!-- NEW: Edit/Save toolbar -->
+        <div class="board-toolbar">
+          <button class="btn me" type="button" data-action="edit" data-board="me">Edit</button>
+          <button class="btn me" type="button" data-action="save" data-board="me" disabled>Save</button>
+        </div>
+
         <div class="grid" id="board-me" aria-label="Anzum 2026 goals bingo board"></div>
         <div class="actions">
           <button class="btn secondary" type="button" onclick="resetBoard('me')">Reset</button>
@@ -328,6 +383,13 @@
 
       <div class="board board-her">
         <h2>Anika’s Board</h2>
+
+        <!-- NEW: Edit/Save toolbar -->
+        <div class="board-toolbar">
+          <button class="btn" type="button" data-action="edit" data-board="partner">Edit</button>
+          <button class="btn" type="button" data-action="save" data-board="partner" disabled>Save</button>
+        </div>
+
         <div class="grid" id="board-partner" aria-label="Anika 2026 goals bingo board"></div>
         <div class="actions">
           <button class="btn secondary" type="button" onclick="resetBoard('partner')">Reset</button>
@@ -346,6 +408,55 @@
     // Fixed room id
     const ROOM_ID = "tanzum-2026-bingo";
     function roomScopeKey() { return `room:${ROOM_ID}`; }
+
+    // NEW: edit-mode state per board
+    const editState = { me: false, partner: false };
+
+    // NEW: helpers to toggle edit mode + save from toolbar
+    function setEditMode(boardKey, on){
+      editState[boardKey] = !!on;
+
+      // add a visual state on the containing .board card (not the grid id)
+      const gridEl = document.getElementById(`board-${boardKey}`);
+      const boardCard = gridEl ? gridEl.closest(".board") : null;
+      boardCard?.classList.toggle("is-editing", !!on);
+
+      const cells = getCells(boardKey);
+      cells.forEach(cell => {
+        cell.contentEditable = on ? "true" : "false";
+        cell.spellcheck = false;
+      });
+
+      const editBtn = document.querySelector(`button[data-action="edit"][data-board="${boardKey}"]`);
+      const saveBtn = document.querySelector(`button[data-action="save"][data-board="${boardKey}"]`);
+      if (editBtn) editBtn.disabled = on;
+      if (saveBtn) saveBtn.disabled = !on;
+    }
+
+    function toolbarSave(boardKey){
+      // Save current text/done state, then exit edit mode
+      saveBoard(boardKey, { celebrate: false });
+      setEditMode(boardKey, false);
+    }
+
+    // Toolbar click handling
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-action][data-board]");
+      if (!btn) return;
+
+      const boardKey = btn.dataset.board;
+      const action = btn.dataset.action;
+
+      if (action === "edit") setEditMode(boardKey, true);
+      if (action === "save") toolbarSave(boardKey);
+    });
+
+    // Optional: prevent Enter (line breaks) while editing
+    document.addEventListener("keydown", (e) => {
+      const cell = e.target.closest(".cell[contenteditable='true']");
+      if (!cell) return;
+      if (e.key === "Enter") e.preventDefault();
+    });
 
     function lineSets() {
       const lines = [];
@@ -477,7 +588,9 @@
       for (let i = 0; i < SIZE; i++) {
         const cell = document.createElement("div");
         cell.className = "cell";
-        cell.contentEditable = "true";
+
+        // NEW: start locked (not editable) until user hits Edit
+        cell.contentEditable = "false";
         cell.spellcheck = false;
 
         if (saved[i]) {
@@ -485,20 +598,25 @@
           cell.classList.toggle("done", !!saved[i].done);
         }
 
-        // Toggle done if not actively editing
+        // Toggle done only when NOT editing
         cell.addEventListener("click", () => {
-          if (document.activeElement === cell) return;
+          if (editState[boardKey]) return;              // editing mode: don't toggle done
+          if (document.activeElement === cell) return;  // safety
           cell.classList.toggle("done");
           saveBoard(boardKey, { celebrate: true });
         });
 
-        // Save on typing
+        // While editing, we do NOT auto-save; Save button does it
         cell.addEventListener("input", () => {
-          saveBoard(boardKey, { celebrate: false });
+          if (!editState[boardKey]) return;
+          // no-op (intentionally). Save happens via toolbar button.
         });
 
         grid.appendChild(cell);
       }
+
+      // NEW: after building, ensure toolbar reflects locked state
+      setEditMode(boardKey, false);
     }
 
     function resetBoard(boardKey) {
@@ -659,8 +777,9 @@
     loginBtn?.addEventListener("click", async () => {
       try {
         await signInWithPopup(auth, provider);
-      } catch {
-        setStatus("Login cancelled or blocked.");
+      } catch (e) {
+        console.log("Firebase login error:", e);
+        setStatus(e?.code ? `Login error: ${e.code}` : "Login cancelled or blocked.");
       }
     });
 
