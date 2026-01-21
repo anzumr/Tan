@@ -122,6 +122,72 @@
       70% { transform: scale(0.98); }
     }
 
+    /* ---------- TOP-RIGHT BINGO APP BUTTON ---------- */
+
+    .top-right-bingo-btn {
+      position: fixed;
+      top: 18px;
+      right: 88px; /* sits to the left of Photos */
+      display: none; /* hidden until unlocked + questions page */
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      z-index: 50;
+      text-align: center;
+      font-family: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      animation: jiggle 1.4s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    .top-right-bingo-btn.visible { display: flex; }
+
+    .bingo-icon-wrapper { position: relative; }
+
+    .top-right-bingo-btn img {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+      display: block;
+      transition: transform 0.2s ease;
+      object-fit: cover;
+    }
+
+    .bingo-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fdfdfd;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.45);
+    }
+
+    .bingo-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ff3b30;
+      color: #fff;
+      min-width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+      padding: 0 6px;
+      border: 1px solid #fff;
+      animation: badgePulse 1.9s ease-in-out infinite;
+    }
+
+    .top-right-bingo-btn:hover img { transform: translateY(-4px) scale(1.06); }
+
+    /* small screens: keep spacing consistent */
+    @media (max-width: 480px) {
+      .top-right-bingo-btn { top: 12px; right: 82px; }
+    }
+
     /* ---------------- LOCK SCREEN (iPhone style) ---------------- */
 
     #lockScreen {
@@ -959,6 +1025,15 @@
 </head>
 <body>
 
+  <!-- BINGO APP BUTTON -->
+  <div class="top-right-bingo-btn" onclick="location.href='bingo.html'">
+    <div class="bingo-icon-wrapper">
+      <img src="bingo-app-icon.png" alt="Bingo app">
+      <span class="bingo-badge">0</span>
+    </div>
+    <span class="bingo-label">Bingo</span>
+  </div>
+
   <!-- PHOTOS APP BUTTON -->
   <div class="top-right-photos-btn" onclick="location.href='photos.html'">
     <div class="photos-icon-wrapper">
@@ -1291,6 +1366,7 @@ You don’t just stand beside me. You live in my heart 💘
     const surveyPage   = document.getElementById("surveyPage");
     const bettaCursor  = document.getElementById("bettaCursor");
     const photosButton = document.querySelector(".top-right-photos-btn");
+    const bingoButton  = document.querySelector(".top-right-bingo-btn");
 
     // Thread + Viewer
     const iosNotification = document.getElementById("iosNotification");
@@ -1325,6 +1401,31 @@ You don’t just stand beside me. You live in my heart 💘
       }
     }
     document.addEventListener("DOMContentLoaded", updatePhotosBadgeFromStorage);
+
+    function updateBingoBadgeFromStorage() {
+      const badge = document.querySelector(".bingo-badge");
+      if (!badge) return;
+
+      let count = 0;
+      try {
+        const raw = localStorage.getItem("bingoDoneCount");
+        const parsed = parseInt(raw || "0", 10);
+        if (!Number.isNaN(parsed)) count = parsed;
+      } catch (e) { count = 0; }
+
+      if (count > 0) {
+        badge.textContent = String(count);
+        badge.style.display = "flex";
+      } else {
+        badge.style.display = "none";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", updateBingoBadgeFromStorage);
+    window.addEventListener("storage", (e) => {
+      if (e.key === "bingoDoneCount") updateBingoBadgeFromStorage();
+    });
+
 
     function pulseFish() {
       if (!bettaCursor) return;
@@ -1557,6 +1658,7 @@ You don’t just stand beside me. You live in my heart 💘
       loveLetter.style.display = "none";
       surveyPage.style.display = "block";
       if (photosButton) photosButton.classList.add("visible");
+      if (bingoButton)  bingoButton.classList.add("visible");
       window.location.hash = "questions";
     });
 
@@ -1705,6 +1807,7 @@ You don’t just stand beside me. You live in my heart 💘
         if (loveLetter)   loveLetter.style.display = "none";
         if (surveyPage)   surveyPage.style.display = "block";
         if (photosButton) photosButton.classList.add("visible");
+        if (bingoButton)  bingoButton.classList.add("visible");
       }
     }
     document.addEventListener("DOMContentLoaded", handleHashNavigation);

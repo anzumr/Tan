@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2026 Goals Bingo 💞</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Confetti (for “Completed Together”) -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root{
+      --pink1:#ff8cd6;
+      --purple1:#b084f7;
+      --card-bg:rgba(255,255,255,0.92);
+      --rounded:22px;
+    }
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:"Inter",system-ui,-apple-system,BlinkMacSystemFont;
+      background:
+        linear-gradient(135deg, rgba(255,140,214,0.65), rgba(176,132,247,0.75)),
+        url("peonies.jpg") center/cover fixed no-repeat;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      padding:24px 14px;
+      color:#111;
+    }
+
+    .wrap{ width:100%; max-width:980px; }
+
+    header{
+      text-align:center;
+      margin-bottom:12px;
+      color:#fff;
+      text-shadow:0 2px 6px rgba(0,0,0,0.40);
+    }
+    header h1{
+      font-family:"SF Pro Display",system-ui;
+      font-size:28px;
+      margin:0 0 6px 0;
+      font-weight:600;
+      letter-spacing:0.2px;
+    }
+    header p{
+      margin:0;
+      font-size:14px;
+      opacity:0.95;
+    }
+
+    /* UPDATED: login bar (replaces sync code UI) */
+    .loginbar{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      align-items:center;
+      margin:12px 0 12px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      padding:10px 14px;
+      border-radius:999px;
+      border:none;
+      cursor:pointer;
+      font-size:13px;
+      font-family:"SF Pro Display",system-ui;
+      background:linear-gradient(90deg,var(--pink1),var(--purple1));
+      color:#fff;
+      box-shadow:0 10px 26px rgba(0,0,0,0.18);
+      user-select:none;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .btn.secondary{
+      background:rgba(0,0,0,0.10);
+      color:#222;
+      box-shadow:none;
+      border:1px solid rgba(0,0,0,0.10);
+    }
+
+    #syncStatus{
+      text-align:center;
+      margin:0 0 14px 0;
+      font-size:13px;
+      color:#fff;
+      opacity:0.95;
+      text-shadow:0 2px 6px rgba(0,0,0,0.35);
+      min-height:18px;
+    }
+
+    .boards{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:18px;
+    }
+    @media (min-width:860px){
+      .boards{ grid-template-columns:1fr 1fr; }
+    }
+
+    .board{
+      background:var(--card-bg);
+      border-radius:var(--rounded);
+      box-shadow:0 18px 45px rgba(0,0,0,0.18);
+      padding:16px;
+    }
+    .board h2{
+      text-align:center;
+      font-family:"SF Pro Display",system-ui;
+      font-size:18px;
+      margin:0 0 12px 0;
+      font-weight:600;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(5, 1fr);
+      gap:8px;
+    }
+
+    .cell{
+      aspect-ratio:1 / 1;
+      background:rgba(255,255,255,0.92);
+      border-radius:14px;
+      padding:8px;
+      font-size:12px;
+      line-height:1.25;
+      border:1px solid rgba(0,0,0,0.08);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      cursor:pointer;
+      position:relative;
+      transition:transform 0.15s ease, box-shadow 0.15s ease;
+      user-select:none;
+      -webkit-user-select:none;
+      -webkit-tap-highlight-color:transparent;
+      overflow:hidden;
+    }
+
+    .cell:hover{
+      transform:translateY(-2px);
+      box-shadow:0 6px 16px rgba(0,0,0,0.15);
+    }
+
+    .cell[contenteditable="true"]{
+      cursor:text;
+      user-select:text;
+      -webkit-user-select:text;
+    }
+
+    .cell[contenteditable="true"]:focus{
+      outline:none;
+      box-shadow:0 0 0 2px rgba(255,140,214,0.55);
+      transform:none;
+    }
+
+    .cell.done{
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255,140,214,0.22),
+          rgba(255,140,214,0.22) 6px,
+          rgba(176,132,247,0.22) 6px,
+          rgba(176,132,247,0.22) 12px
+        );
+      text-decoration:line-through;
+      opacity:0.72;
+    }
+
+    .actions{
+      margin-top:12px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    /* Win overlay */
+    #bingoWinOverlay{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,0.55);
+      z-index:9999;
+      padding:16px;
+    }
+    #bingoWinCard{
+      width:min(420px, 92vw);
+      background:rgba(255,255,255,0.92);
+      border-radius:22px;
+      padding:18px 16px;
+      text-align:center;
+      box-shadow:0 18px 45px rgba(0,0,0,0.25);
+      font-family:"SF Pro Display",system-ui;
+    }
+    #bingoWinTitle{ font-size:18px; font-weight:700; }
+    #bingoWinText{ margin-top:6px; font-size:14px; opacity:0.85; line-height:1.35; }
+  </style>
+</head>
+
+<body>
+  <!-- “Completed Together” overlay -->
+  <div id="bingoWinOverlay" aria-label="Completed Together overlay">
+    <div id="bingoWinCard">
+      <div id="bingoWinTitle">Completed Together 💞</div>
+      <div id="bingoWinText"></div>
+      <button id="bingoWinClose" class="btn" style="margin-top:12px;">Okay 🫶</button>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <header>
+      <h1>Our 2026 Bingo 💗</h1>
+      <p>Type goals. Tap a square to cross it out. Finish the year together.</p>
+    </header>
+
+    <!-- UPDATED: Google login bar (replaces sync code UI) -->
+    <div class="loginbar">
+      <button id="loginBtn" class="btn" type="button">Sign in with Google</button>
+      <button id="logoutBtn" class="btn secondary" type="button" style="display:none;">Sign out</button>
+    </div>
+    <div id="syncStatus"></div>
+
+    <section class="boards" id="boardsArea" style="display:none;">
+      <div class="board">
+        <h2>Anzum’s Board</h2>
+        <div class="grid" id="board-me" aria-label="Anzum 2026 goals bingo board"></div>
+        <div class="actions">
+          <button class="btn secondary" type="button" onclick="resetBoard('me')">Reset</button>
+        </div>
+      </div>
+
+      <div class="board">
+        <h2>Anika’s Board</h2>
+        <div class="grid" id="board-partner" aria-label="Anika 2026 goals bingo board"></div>
+        <div class="actions">
+          <button class="btn secondary" type="button" onclick="resetBoard('partner')">Reset</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    /**********************
+     * Local + UI behavior
+     **********************/
+    const SIZE = 25;
+    const DONECOUNT_KEY = "bingoDoneCount";  // index.html reads this for the badge
+
+    // UPDATED: no more user-entered sync code. We keep a fixed room id.
+    const ROOM_ID = "tanzum-2026-bingo";
+    function roomScopeKey() { return `room:${ROOM_ID}`; }
+
+    function lineSets() {
+      const lines = [];
+      for (let r = 0; r < 5; r++) lines.push([0,1,2,3,4].map(c => r*5 + c)); // rows
+      for (let c = 0; c < 5; c++) lines.push([0,1,2,3,4].map(r => r*5 + c)); // cols
+      lines.push([0,6,12,18,24]); // diag
+      lines.push([4,8,12,16,20]); // diag
+      return lines;
+    }
+
+    function getCells(boardKey) {
+      return [...document.querySelectorAll(`#board-${boardKey} .cell`)];
+    }
+
+    function getStoredBoard(boardKey) {
+      try {
+        return JSON.parse(localStorage.getItem(`bingo-${boardKey}`) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function setStoredBoard(boardKey, data) {
+      localStorage.setItem(`bingo-${boardKey}`, JSON.stringify(data));
+    }
+
+    function countAllDone() {
+      const all = [...getCells("me"), ...getCells("partner")];
+      return all.filter(c => c.classList.contains("done")).length;
+    }
+
+    function updateBadgeCount() {
+      const done = countAllDone();
+      localStorage.setItem(DONECOUNT_KEY, String(done));
+    }
+    window.updateBadgeCount = updateBadgeCount;
+
+    // UPDATED: completed lines store now only keyed by the fixed room
+    const LINES_KEY = "bingoLinesV2";
+    function getCompletedLineIds() {
+      let store = {};
+      try { store = JSON.parse(localStorage.getItem(LINES_KEY) || "{}"); } catch { store = {}; }
+      const scope = roomScopeKey();
+      const list = store[scope] || [];
+      return new Set(list);
+    }
+
+    function setCompletedLineIds(set) {
+      let store = {};
+      try { store = JSON.parse(localStorage.getItem(LINES_KEY) || "{}"); } catch { store = {}; }
+      const scope = roomScopeKey();
+      store[scope] = [...set];
+      localStorage.setItem(LINES_KEY, JSON.stringify(store));
+    }
+
+    function showWin(text) {
+      const overlay = document.getElementById("bingoWinOverlay");
+      const winText = document.getElementById("bingoWinText");
+      const closeBtn = document.getElementById("bingoWinClose");
+
+      if (winText) winText.textContent = text;
+      if (overlay) overlay.style.display = "flex";
+
+      if (window.confetti) {
+        confetti({ particleCount: 160, spread: 70, origin: { y: 0.65 } });
+      }
+
+      if (closeBtn) {
+        closeBtn.onclick = () => { overlay.style.display = "none"; };
+      }
+      overlay?.addEventListener("click", (e) => {
+        if (e.target === overlay) overlay.style.display = "none";
+      }, { once: true });
+    }
+
+    // Expose celebration so Firebase module can call it on remote updates
+    function checkAndCelebrate(boardKey, whoLabel) {
+      const cells = getCells(boardKey);
+      const done = cells.map(c => c.classList.contains("done"));
+      const lines = lineSets();
+      const completed = getCompletedLineIds();
+
+      let newLineFound = false;
+
+      for (let i = 0; i < lines.length; i++) {
+        const complete = lines[i].every(idx => done[idx]);
+        const id = `${roomScopeKey()}:${boardKey}:${i}`;
+        if (complete && !completed.has(id)) {
+          completed.add(id);
+          newLineFound = true;
+        }
+      }
+
+      if (newLineFound) {
+        setCompletedLineIds(completed);
+        showWin(`${whoLabel} completed a line!`);
+      }
+    }
+    window.__bingoCelebrateForBoard = (boardKey, whoLabel) => {
+      try { checkAndCelebrate(boardKey, whoLabel); } catch {}
+    };
+
+    function saveBoard(boardKey, opts = { celebrate: true, whoLabel: "" }) {
+      const cells = getCells(boardKey);
+      const data = cells.map(c => ({
+        text: (c.innerText || "").trim(),
+        done: c.classList.contains("done")
+      }));
+      setStoredBoard(boardKey, data);
+
+      updateBadgeCount();
+
+      if (opts.celebrate) {
+        const who = opts.whoLabel || (boardKey === "me" ? "Anzum" : "Anika");
+        checkAndCelebrate(boardKey, who);
+      }
+
+      // If sync is on, schedule a push
+      if (window.__bingoSchedulePush) window.__bingoSchedulePush();
+    }
+    window.saveBoard = saveBoard;
+
+    function initBoard(boardKey) {
+      const grid = document.getElementById(`board-${boardKey}`);
+      if (!grid) return;
+
+      const saved = getStoredBoard(boardKey);
+      grid.innerHTML = "";
+
+      for (let i = 0; i < SIZE; i++) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.contentEditable = "true";
+        cell.spellcheck = false;
+
+        if (saved[i]) {
+          cell.innerText = saved[i].text || "";
+          cell.classList.toggle("done", !!saved[i].done);
+        }
+
+        // Toggle done if not actively editing
+        cell.addEventListener("click", () => {
+          if (document.activeElement === cell) return;
+          cell.classList.toggle("done");
+          saveBoard(boardKey, { celebrate: true });
+        });
+
+        // Save on typing
+        cell.addEventListener("input", () => {
+          saveBoard(boardKey, { celebrate: false });
+        });
+
+        grid.appendChild(cell);
+      }
+    }
+
+    function resetBoard(boardKey) {
+      const label = boardKey === "me" ? "Anzum’s" : "Anika’s";
+      if (!confirm(`Clear ${label} board?`)) return;
+
+      localStorage.removeItem(`bingo-${boardKey}`);
+      initBoard(boardKey);
+      updateBadgeCount();
+
+      if (window.__bingoSchedulePush) window.__bingoSchedulePush();
+    }
+    window.resetBoard = resetBoard;
+
+    // Boot local boards (hidden until login)
+    initBoard("me");
+    initBoard("partner");
+    updateBadgeCount();
+
+    // Close overlay with ESC
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        const overlay = document.getElementById("bingoWinOverlay");
+        if (overlay && overlay.style.display === "flex") overlay.style.display = "none";
+      }
+    });
+  </script>
+
+  <!-- UPDATED: Firebase + Google Login + Firestore realtime sync -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+    const statusEl = document.getElementById("syncStatus");
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const boardsArea = document.getElementById("boardsArea");
+
+    function setStatus(msg){ if (statusEl) statusEl.textContent = msg || ""; }
+
+    // YOUR Firebase config (from your message)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCcbJqHpYRPFGgmgBh5grAhR5aDniDZRyg",
+      authDomain: "tanzum-5c20b.firebaseapp.com",
+      projectId: "tanzum-5c20b",
+      storageBucket: "tanzum-5c20b.firebasestorage.app",
+      messagingSenderId: "301887898670",
+      appId: "1:301887898670:web:6b0d43c29148ea9b830bbf",
+      measurementId: "G-FF64TZSZ2V"
+    };
+
+    // SAME room for both of you (no codes, no extra steps)
+    const ROOM_ID = "tanzum-2026-bingo";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    let unsub = null;
+    let applyingRemote = false;
+    let saveTimer = null;
+
+    function getCells(boardKey){
+      return [...document.querySelectorAll(`#board-${boardKey} .cell`)];
+    }
+
+    function boardToData(boardKey){
+      const cells = getCells(boardKey);
+      return cells.map(c => ({
+        text: (c.innerText || "").trim(),
+        done: c.classList.contains("done")
+      }));
+    }
+
+    function applyBoard(boardKey, data){
+      const cells = getCells(boardKey);
+      if (!cells.length || !Array.isArray(data)) return;
+
+      applyingRemote = true;
+
+      for (let i = 0; i < cells.length; i++){
+        const cell = cells[i];
+        const item = data[i] || { text:"", done:false };
+
+        // Don't overwrite what someone is typing right now on this device
+        if (document.activeElement === cell) continue;
+
+        const nextText = (item.text || "");
+        if ((cell.innerText || "").trim() !== nextText) cell.innerText = nextText;
+        cell.classList.toggle("done", !!item.done);
+      }
+
+      // Update local storage copies so refresh still works offline
+      try { localStorage.setItem(`bingo-${boardKey}`, JSON.stringify(data)); } catch {}
+
+      applyingRemote = false;
+
+      // Badge + celebration check (remote changes should count + can celebrate)
+      if (window.updateBadgeCount) window.updateBadgeCount();
+      if (window.__bingoCelebrateForBoard) {
+        const who = boardKey === "me" ? "Anzum" : "Anika";
+        window.__bingoCelebrateForBoard(boardKey, who);
+      }
+    }
+
+    async function pushNow(){
+      const ref = doc(db, "couplesBingoRooms", ROOM_ID);
+      const payload = {
+        me: boardToData("me"),
+        partner: boardToData("partner"),
+        updatedAt: serverTimestamp()
+      };
+      await setDoc(ref, payload, { merge: true });
+
+      // keep index badge in sync across tabs/devices (local value)
+      try {
+        localStorage.setItem("bingoDoneCount", String(
+          [...document.querySelectorAll(".cell.done")].length
+        ));
+      } catch {}
+    }
+
+    function schedulePush(){
+      if (applyingRemote) return;
+
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        pushNow().catch(()=>{});
+      }, 450);
+    }
+
+    window.__bingoSchedulePush = schedulePush;
+
+    function startListening(){
+      if (unsub) unsub();
+      const ref = doc(db, "couplesBingoRooms", ROOM_ID);
+      unsub = onSnapshot(ref, (snap) => {
+        const data = snap.data();
+        if (!data) return;
+
+        if (data.me) applyBoard("me", data.me);
+        if (data.partner) applyBoard("partner", data.partner);
+
+        setStatus("Synced ✅ (live)");
+      }, () => {
+        setStatus("Sync error (check Firestore rules).");
+      });
+    }
+
+    loginBtn?.addEventListener("click", async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch {
+        setStatus("Login cancelled or blocked.");
+      }
+    });
+
+    logoutBtn?.addEventListener("click", async () => {
+      try {
+        if (unsub) unsub();
+        unsub = null;
+        await signOut(auth);
+      } catch {}
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        boardsArea.style.display = "none";
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        setStatus("Sign in to sync your boards.");
+        return;
+      }
+
+      boardsArea.style.display = "grid";
+      loginBtn.style.display = "none";
+      logoutBtn.style.display = "inline-block";
+      setStatus("Connecting…");
+
+      startListening();
+
+      // Soft-create the doc shortly after connect
+      setTimeout(() => schedulePush(), 800);
+    });
+  </script>
+
+  <!--
+    IMPORTANT: Set Firestore rules in Firebase Console to restrict to you two.
+
+    Firestore -> Rules:
+
+    rules_version = '2';
+    service cloud.firestore {
+      match /databases/{database}/documents {
+        function allowed() {
+          return request.auth != null
+            && request.auth.token.email in ["YOUR_EMAIL@gmail.com", "ANIKA_EMAIL@gmail.com"];
+        }
+        match /couplesBingoRooms/{roomId} {
+          allow read, write: if allowed();
+        }
+      }
+    }
+
+    Also: Authentication -> Settings -> Authorized domains
+    Add: your GitHub pages domain (username.github.io) and your custom domain if you use one.
+  -->
+</body>
+</html>
