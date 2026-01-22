@@ -96,7 +96,7 @@
       background:linear-gradient(90deg, var(--me1), var(--me2));
     }
 
-    /* NEW: per-board toolbar row */
+    /* per-board toolbar row */
     .board-toolbar{
       display:flex;
       justify-content:center;
@@ -177,7 +177,7 @@
       box-shadow:0 6px 16px rgba(0,0,0,0.15);
     }
 
-    /* NEW: show "editing" state without forcing contenteditable always on */
+    /* show "editing" state without forcing contenteditable always on */
     .board.is-editing .cell{
       cursor:text;
       user-select:text;
@@ -219,7 +219,7 @@
 
     /* -------------------- THEMED BOARDS -------------------- */
 
-    /* YOUR BOARD: Flame theme (replaces prior tough/scary look) */
+    /* YOUR BOARD: Flame theme */
     .board-me{
       background:
         radial-gradient(1200px 520px at 18% 12%, rgba(255,170,70,0.35), transparent 55%),
@@ -270,7 +270,7 @@
       box-shadow: 0 0 0 2px rgba(255, 90, 20, 0.55);
     }
 
-    /* ANIKA BOARD: Pink flower theme (more floral than before) */
+    /* ANIKA BOARD: Pink flower theme */
     .board-her{
       background:
         radial-gradient(900px 520px at 18% 16%, rgba(255,160,210,0.26), transparent 55%),
@@ -369,10 +369,11 @@
       <div class="board board-me">
         <h2>Anzum’s Board</h2>
 
-        <!-- NEW: Edit/Save toolbar -->
+        <!-- Edit/Save toolbar + Randomize -->
         <div class="board-toolbar">
           <button class="btn me" type="button" data-action="edit" data-board="me">Edit</button>
           <button class="btn me" type="button" data-action="save" data-board="me" disabled>Save</button>
+          <button class="btn me" type="button" data-action="randomize" data-board="me">Randomize</button>
         </div>
 
         <div class="grid" id="board-me" aria-label="Anzum 2026 goals bingo board"></div>
@@ -384,10 +385,11 @@
       <div class="board board-her">
         <h2>Anika’s Board</h2>
 
-        <!-- NEW: Edit/Save toolbar -->
+        <!-- Edit/Save toolbar + Randomize -->
         <div class="board-toolbar">
           <button class="btn" type="button" data-action="edit" data-board="partner">Edit</button>
           <button class="btn" type="button" data-action="save" data-board="partner" disabled>Save</button>
+          <button class="btn" type="button" data-action="randomize" data-board="partner">Randomize</button>
         </div>
 
         <div class="grid" id="board-partner" aria-label="Anika 2026 goals bingo board"></div>
@@ -408,6 +410,78 @@
     // Fixed room id
     const ROOM_ID = "tanzum-2026-bingo";
     function roomScopeKey() { return `room:${ROOM_ID}`; }
+
+    // -----------------------
+    // RANDOMIZE (NEW)
+    // -----------------------
+    const RANDOM_LOCK_KEY = "bingoRandomLockedV1";
+
+    function getRandomLocked(){
+      try{
+        const store = JSON.parse(localStorage.getItem(RANDOM_LOCK_KEY) || "{}");
+        return !!store[roomScopeKey()];
+      } catch {
+        return false;
+      }
+    }
+
+    function setRandomLocked(locked){
+      let store = {};
+      try{ store = JSON.parse(localStorage.getItem(RANDOM_LOCK_KEY) || "{}"); } catch { store = {}; }
+      store[roomScopeKey()] = !!locked;
+      localStorage.setItem(RANDOM_LOCK_KEY, JSON.stringify(store));
+      updateRandomizeButtons();
+    }
+
+    function shuffleInPlace(arr){
+      for (let i = arr.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function updateRandomizeButtons(){
+      const locked = getRandomLocked();
+      ["me","partner"].forEach((boardKey) => {
+        const btn = document.querySelector(`button[data-action="randomize"][data-board="${boardKey}"]`);
+        if (!btn) return;
+        // Disable if locked OR if currently editing this board
+        btn.disabled = locked || !!editState[boardKey];
+      });
+    }
+
+    function randomizeBoard(boardKey){
+      if (getRandomLocked()) return;
+      if (editState[boardKey]) return;
+
+      const cells = getCells(boardKey);
+      if (!cells.length) return;
+
+      // shuffle current cell payloads (text + done) together
+      const payload = cells.map(c => ({
+        text: (c.innerText || "").trim(),
+        done: c.classList.contains("done")
+      }));
+
+      shuffleInPlace(payload);
+
+      // apply
+      for (let i = 0; i < cells.length; i++){
+        cells[i].innerText = payload[i]?.text ?? "";
+        cells[i].classList.toggle("done", !!payload[i]?.done);
+      }
+
+      // persist + sync (no celebration on shuffle)
+      saveBoard(boardKey, { celebrate: false });
+    }
+
+    // If ANY square is marked done for the first time, lock randomize (shared).
+    function lockRandomizeIfFirstCompletion(){
+      if (getRandomLocked()) return;
+      const anyDone = [...getCells("me"), ...getCells("partner")].some(c => c.classList.contains("done"));
+      if (anyDone) setRandomLocked(true);
+    }
 
     // NEW: edit-mode state per board
     const editState = { me: false, partner: false };
@@ -431,6 +505,8 @@
       const saveBtn = document.querySelector(`button[data-action="save"][data-board="${boardKey}"]`);
       if (editBtn) editBtn.disabled = on;
       if (saveBtn) saveBtn.disabled = !on;
+
+      updateRandomizeButtons();
     }
 
     function toolbarSave(boardKey){
@@ -449,6 +525,7 @@
 
       if (action === "edit") setEditMode(boardKey, true);
       if (action === "save") toolbarSave(boardKey);
+      if (action === "randomize") randomizeBoard(boardKey);
     });
 
     // Optional: prevent Enter (line breaks) while editing
@@ -589,7 +666,7 @@
         const cell = document.createElement("div");
         cell.className = "cell";
 
-        // NEW: start locked (not editable) until user hits Edit
+        // start locked (not editable) until user hits Edit
         cell.contentEditable = "false";
         cell.spellcheck = false;
 
@@ -602,7 +679,12 @@
         cell.addEventListener("click", () => {
           if (editState[boardKey]) return;              // editing mode: don't toggle done
           if (document.activeElement === cell) return;  // safety
+
           cell.classList.toggle("done");
+
+          // NEW: lock randomize as soon as the first completion happens anywhere
+          lockRandomizeIfFirstCompletion();
+
           saveBoard(boardKey, { celebrate: true });
         });
 
@@ -615,8 +697,9 @@
         grid.appendChild(cell);
       }
 
-      // NEW: after building, ensure toolbar reflects locked state
+      // after building, ensure toolbar reflects locked state
       setEditMode(boardKey, false);
+      updateRandomizeButtons();
     }
 
     function resetBoard(boardKey) {
@@ -635,6 +718,7 @@
     initBoard("me");
     initBoard("partner");
     updateBadgeCount();
+    updateRandomizeButtons();
 
     // Close overlay with ESC
     window.addEventListener("keydown", (e) => {
@@ -727,6 +811,13 @@
       if (window.__bingoCelebrateForBoard) {
         const who = boardKey === "me" ? "Anzum" : "Anika";
         window.__bingoCelebrateForBoard(boardKey, who);
+      }
+
+      // NEW: If remote update introduces first completion, lock randomize too
+      if (typeof window.lockRandomizeIfFirstCompletion === "function") {
+        window.lockRandomizeIfFirstCompletion();
+      } else {
+        // fallback: local script already handles clicks; no-op
       }
     }
 
