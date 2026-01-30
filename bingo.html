@@ -23,6 +23,11 @@
       --me2:#0b0b0f;   /* near-black */
       --her1:#ff78c8;
       --her2:#b084f7;
+
+      /* Couples theme (red + pink blend) */
+      --couples1:#ff2a6d; /* hot pink-red */
+      --couples2:#ff3b30; /* iOS red */
+      --couples3:#ff8cd6; /* pink */
     }
     *{ box-sizing:border-box; }
 
@@ -91,9 +96,14 @@
       border:1px solid rgba(0,0,0,0.10);
     }
 
-    /* Optional: “tough” red button variant (used on Anzum board actions if you want) */
+    /* Optional: “tough” red button variant */
     .btn.me{
       background:linear-gradient(90deg, var(--me1), var(--me2));
+    }
+
+    /* Couples button variant */
+    .btn.couples{
+      background: linear-gradient(90deg, var(--couples2), var(--couples3));
     }
 
     /* per-board toolbar row */
@@ -317,6 +327,55 @@
       box-shadow: 0 0 0 2px rgba(255, 140, 214, 0.55);
     }
 
+    /* COUPLES BOARD: Red + Pink blend */
+    .board-couples{
+      background:
+        radial-gradient(900px 520px at 18% 16%, rgba(255, 42, 109, 0.22), transparent 55%),
+        radial-gradient(820px 520px at 82% 28%, rgba(255, 59, 48, 0.20), transparent 60%),
+        radial-gradient(900px 520px at 60% 80%, rgba(255, 140, 214, 0.18), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,245,250,0.92));
+      border: 1px solid rgba(255, 70, 120, 0.26);
+    }
+    .board-couples::before{
+      content:"";
+      position:absolute;
+      inset:-40px;
+      pointer-events:none;
+      z-index:0;
+      opacity:.95;
+      background:
+        radial-gradient(circle at 18% 28%, rgba(255, 59, 48, 0.20) 0 18%, transparent 19%),
+        radial-gradient(circle at 34% 70%, rgba(255, 42, 109, 0.18) 0 16%, transparent 17%),
+        radial-gradient(circle at 60% 26%, rgba(255, 140, 214, 0.18) 0 18%, transparent 19%),
+        radial-gradient(circle at 78% 62%, rgba(255, 59, 48, 0.16) 0 16%, transparent 17%);
+      filter: blur(10px);
+    }
+    .board-couples > *{ position:relative; z-index:1; }
+
+    .board-couples h2{ color:#2a0c1a; }
+
+    .board-couples .cell{
+      border:1px solid rgba(255, 70, 120, 0.22);
+      background: linear-gradient(180deg, rgba(255, 59, 48, 0.08), rgba(255, 140, 214, 0.06));
+      box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+    }
+    .board-couples .cell:hover{ box-shadow: 0 14px 26px rgba(0,0,0,0.14); }
+    .board-couples .cell.done{
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255, 59, 48, 0.20),
+          rgba(255, 59, 48, 0.20) 6px,
+          rgba(255, 140, 214, 0.18) 6px,
+          rgba(255, 140, 214, 0.18) 12px
+        );
+      text-decoration: line-through;
+      opacity: 0.82;
+    }
+    .board-couples .cell[contenteditable="true"]:focus{
+      box-shadow: 0 0 0 2px rgba(255, 70, 120, 0.50);
+    }
+
     /* Win overlay */
     #bingoWinOverlay{
       position:fixed;
@@ -366,10 +425,10 @@
     <div id="syncStatus"></div>
 
     <section class="boards" id="boardsArea" style="display:none;">
+      <!-- ME -->
       <div class="board board-me">
         <h2>Anzum’s Board</h2>
 
-        <!-- Edit/Save toolbar + Randomize -->
         <div class="board-toolbar">
           <button class="btn me" type="button" data-action="edit" data-board="me">Edit</button>
           <button class="btn me" type="button" data-action="save" data-board="me" disabled>Save</button>
@@ -382,10 +441,10 @@
         </div>
       </div>
 
+      <!-- HER -->
       <div class="board board-her">
         <h2>Anika’s Board</h2>
 
-        <!-- Edit/Save toolbar + Randomize -->
         <div class="board-toolbar">
           <button class="btn" type="button" data-action="edit" data-board="partner">Edit</button>
           <button class="btn" type="button" data-action="save" data-board="partner" disabled>Save</button>
@@ -395,6 +454,22 @@
         <div class="grid" id="board-partner" aria-label="Anika 2026 goals bingo board"></div>
         <div class="actions">
           <button class="btn secondary" type="button" onclick="resetBoard('partner')">Reset</button>
+        </div>
+      </div>
+
+      <!-- COUPLES -->
+      <div class="board board-couples">
+        <h2>Couples Bingo</h2>
+
+        <div class="board-toolbar">
+          <button class="btn couples" type="button" data-action="edit" data-board="couples">Edit</button>
+          <button class="btn couples" type="button" data-action="save" data-board="couples" disabled>Save</button>
+          <button class="btn couples" type="button" data-action="randomize" data-board="couples">Randomize</button>
+        </div>
+
+        <div class="grid" id="board-couples" aria-label="Couples bingo board"></div>
+        <div class="actions">
+          <button class="btn secondary" type="button" onclick="resetBoard('couples')">Reset</button>
         </div>
       </div>
     </section>
@@ -441,9 +516,12 @@
       return arr;
     }
 
+    // NEW: edit-mode state per board (3 boards now)
+    const editState = { me: false, partner: false, couples: false };
+
     function updateRandomizeButtons(){
       const locked = getRandomLocked();
-      ["me","partner"].forEach((boardKey) => {
+      ["me","partner","couples"].forEach((boardKey) => {
         const btn = document.querySelector(`button[data-action="randomize"][data-board="${boardKey}"]`);
         if (!btn) return;
         // Disable if locked OR if currently editing this board
@@ -452,7 +530,10 @@
     }
 
     function randomizeBoard(boardKey){
-      if (getRandomLocked()) return;
+      if (getRandomLocked()){
+        alert("🔒 Randomize is locked once any square is completed. (Reset boards to unlock.)");
+        return;
+      }
       if (editState[boardKey]) return;
 
       const cells = getCells(boardKey);
@@ -479,18 +560,20 @@
     // If ANY square is marked done for the first time, lock randomize (shared).
     function lockRandomizeIfFirstCompletion(){
       if (getRandomLocked()) return;
-      const anyDone = [...getCells("me"), ...getCells("partner")].some(c => c.classList.contains("done"));
+      const anyDone = [
+        ...getCells("me"),
+        ...getCells("partner"),
+        ...getCells("couples")
+      ].some(c => c.classList.contains("done"));
       if (anyDone) setRandomLocked(true);
     }
-
-    // NEW: edit-mode state per board
-    const editState = { me: false, partner: false };
+    // IMPORTANT: expose for Firebase module to call
+    window.lockRandomizeIfFirstCompletion = lockRandomizeIfFirstCompletion;
 
     // NEW: helpers to toggle edit mode + save from toolbar
     function setEditMode(boardKey, on){
       editState[boardKey] = !!on;
 
-      // add a visual state on the containing .board card (not the grid id)
       const gridEl = document.getElementById(`board-${boardKey}`);
       const boardCard = gridEl ? gridEl.closest(".board") : null;
       boardCard?.classList.toggle("is-editing", !!on);
@@ -510,7 +593,6 @@
     }
 
     function toolbarSave(boardKey){
-      // Save current text/done state, then exit edit mode
       saveBoard(boardKey, { celebrate: false });
       setEditMode(boardKey, false);
     }
@@ -561,7 +643,11 @@
     }
 
     function countAllDone() {
-      const all = [...getCells("me"), ...getCells("partner")];
+      const all = [
+        ...getCells("me"),
+        ...getCells("partner"),
+        ...getCells("couples")
+      ];
       return all.filter(c => c.classList.contains("done")).length;
     }
 
@@ -635,6 +721,13 @@
       try { checkAndCelebrate(boardKey, whoLabel); } catch {}
     };
 
+    function whoLabelFor(boardKey){
+      if (boardKey === "me") return "Anzum";
+      if (boardKey === "partner") return "Anika";
+      if (boardKey === "couples") return "Couples";
+      return "Someone";
+    }
+
     function saveBoard(boardKey, opts = { celebrate: true, whoLabel: "" }) {
       const cells = getCells(boardKey);
       const data = cells.map(c => ({
@@ -646,7 +739,7 @@
       updateBadgeCount();
 
       if (opts.celebrate) {
-        const who = opts.whoLabel || (boardKey === "me" ? "Anzum" : "Anika");
+        const who = opts.whoLabel || whoLabelFor(boardKey);
         checkAndCelebrate(boardKey, who);
       }
 
@@ -677,12 +770,12 @@
 
         // Toggle done only when NOT editing
         cell.addEventListener("click", () => {
-          if (editState[boardKey]) return;              // editing mode: don't toggle done
-          if (document.activeElement === cell) return;  // safety
+          if (editState[boardKey]) return;
+          if (document.activeElement === cell) return;
 
           cell.classList.toggle("done");
 
-          // NEW: lock randomize as soon as the first completion happens anywhere
+          // lock randomize as soon as the first completion happens anywhere
           lockRandomizeIfFirstCompletion();
 
           saveBoard(boardKey, { celebrate: true });
@@ -691,19 +784,17 @@
         // While editing, we do NOT auto-save; Save button does it
         cell.addEventListener("input", () => {
           if (!editState[boardKey]) return;
-          // no-op (intentionally). Save happens via toolbar button.
         });
 
         grid.appendChild(cell);
       }
 
-      // after building, ensure toolbar reflects locked state
       setEditMode(boardKey, false);
       updateRandomizeButtons();
     }
 
     function resetBoard(boardKey) {
-      const label = boardKey === "me" ? "Anzum’s" : "Anika’s";
+      const label = whoLabelFor(boardKey) + "’s";
       if (!confirm(`Clear ${label} board?`)) return;
 
       localStorage.removeItem(`bingo-${boardKey}`);
@@ -717,6 +808,7 @@
     // Boot local boards (hidden until login)
     initBoard("me");
     initBoard("partner");
+    initBoard("couples");
     updateBadgeCount();
     updateRandomizeButtons();
 
@@ -809,15 +901,16 @@
       // Badge + celebration check
       if (window.updateBadgeCount) window.updateBadgeCount();
       if (window.__bingoCelebrateForBoard) {
-        const who = boardKey === "me" ? "Anzum" : "Anika";
+        const who =
+          boardKey === "me" ? "Anzum" :
+          boardKey === "partner" ? "Anika" :
+          "Couples";
         window.__bingoCelebrateForBoard(boardKey, who);
       }
 
-      // NEW: If remote update introduces first completion, lock randomize too
+      // If remote update introduces first completion, lock randomize too
       if (typeof window.lockRandomizeIfFirstCompletion === "function") {
         window.lockRandomizeIfFirstCompletion();
-      } else {
-        // fallback: local script already handles clicks; no-op
       }
     }
 
@@ -826,6 +919,7 @@
       const payload = {
         me: boardToData("me"),
         partner: boardToData("partner"),
+        couples: boardToData("couples"),
         updatedAt: serverTimestamp()
       };
       await setDoc(ref, payload, { merge: true });
@@ -858,6 +952,7 @@
 
         if (data.me) applyBoard("me", data.me);
         if (data.partner) applyBoard("partner", data.partner);
+        if (data.couples) applyBoard("couples", data.couples);
 
         setStatus("Synced ✅ (live)");
       }, () => {
