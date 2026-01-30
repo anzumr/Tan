@@ -486,28 +486,6 @@
     const ROOM_ID = "tanzum-2026-bingo";
     function roomScopeKey() { return `room:${ROOM_ID}`; }
 
-    // -----------------------
-    // RANDOMIZE (NEW)
-    // -----------------------
-    const RANDOM_LOCK_KEY = "bingoRandomLockedV1";
-
-    function getRandomLocked(){
-      try{
-        const store = JSON.parse(localStorage.getItem(RANDOM_LOCK_KEY) || "{}");
-        return !!store[roomScopeKey()];
-      } catch {
-        return false;
-      }
-    }
-
-    function setRandomLocked(locked){
-      let store = {};
-      try{ store = JSON.parse(localStorage.getItem(RANDOM_LOCK_KEY) || "{}"); } catch { store = {}; }
-      store[roomScopeKey()] = !!locked;
-      localStorage.setItem(RANDOM_LOCK_KEY, JSON.stringify(store));
-      updateRandomizeButtons();
-    }
-
     function shuffleInPlace(arr){
       for (let i = arr.length - 1; i > 0; i--){
         const j = Math.floor(Math.random() * (i + 1));
@@ -516,30 +494,25 @@
       return arr;
     }
 
-    // NEW: edit-mode state per board (3 boards now)
+    // edit-mode state per board (3 boards)
     const editState = { me: false, partner: false, couples: false };
 
+    // Simple: only disable randomize while editing that board
     function updateRandomizeButtons(){
-      const locked = getRandomLocked();
       ["me","partner","couples"].forEach((boardKey) => {
         const btn = document.querySelector(`button[data-action="randomize"][data-board="${boardKey}"]`);
         if (!btn) return;
-        // Disable if locked OR if currently editing this board
-        btn.disabled = locked || !!editState[boardKey];
+        btn.disabled = !!editState[boardKey];
       });
     }
 
+    // SIMPLE RANDOMIZE (no lock rules)
     function randomizeBoard(boardKey){
-      if (getRandomLocked()){
-        alert("🔒 Randomize is locked once any square is completed. (Reset boards to unlock.)");
-        return;
-      }
       if (editState[boardKey]) return;
 
       const cells = getCells(boardKey);
       if (!cells.length) return;
 
-      // shuffle current cell payloads (text + done) together
       const payload = cells.map(c => ({
         text: (c.innerText || "").trim(),
         done: c.classList.contains("done")
@@ -547,7 +520,6 @@
 
       shuffleInPlace(payload);
 
-      // apply
       for (let i = 0; i < cells.length; i++){
         cells[i].innerText = payload[i]?.text ?? "";
         cells[i].classList.toggle("done", !!payload[i]?.done);
@@ -557,20 +529,7 @@
       saveBoard(boardKey, { celebrate: false });
     }
 
-    // If ANY square is marked done for the first time, lock randomize (shared).
-    function lockRandomizeIfFirstCompletion(){
-      if (getRandomLocked()) return;
-      const anyDone = [
-        ...getCells("me"),
-        ...getCells("partner"),
-        ...getCells("couples")
-      ].some(c => c.classList.contains("done"));
-      if (anyDone) setRandomLocked(true);
-    }
-    // IMPORTANT: expose for Firebase module to call
-    window.lockRandomizeIfFirstCompletion = lockRandomizeIfFirstCompletion;
-
-    // NEW: helpers to toggle edit mode + save from toolbar
+    // helpers to toggle edit mode + save from toolbar
     function setEditMode(boardKey, on){
       editState[boardKey] = !!on;
 
@@ -610,7 +569,7 @@
       if (action === "randomize") randomizeBoard(boardKey);
     });
 
-    // Optional: prevent Enter (line breaks) while editing
+    // prevent Enter (line breaks) while editing
     document.addEventListener("keydown", (e) => {
       const cell = e.target.closest(".cell[contenteditable='true']");
       if (!cell) return;
@@ -774,10 +733,6 @@
           if (document.activeElement === cell) return;
 
           cell.classList.toggle("done");
-
-          // lock randomize as soon as the first completion happens anywhere
-          lockRandomizeIfFirstCompletion();
-
           saveBoard(boardKey, { celebrate: true });
         });
 
@@ -907,11 +862,6 @@
           "Couples";
         window.__bingoCelebrateForBoard(boardKey, who);
       }
-
-      // If remote update introduces first completion, lock randomize too
-      if (typeof window.lockRandomizeIfFirstCompletion === "function") {
-        window.lockRandomizeIfFirstCompletion();
-      }
     }
 
     async function pushNow(){
@@ -924,7 +874,6 @@
       };
       await setDoc(ref, payload, { merge: true });
 
-      // keep index badge in sync across tabs/devices (local value)
       try {
         localStorage.setItem("bingoDoneCount", String(
           [...document.querySelectorAll(".cell.done")].length
@@ -993,29 +942,8 @@
 
       startListening();
 
-      // Soft-create the doc shortly after connect
       setTimeout(() => schedulePush(), 800);
     });
   </script>
-
-  <!--
-    Firestore rules (example - restrict to your emails):
-
-    rules_version = '2';
-    service cloud.firestore {
-      match /databases/{database}/documents {
-        function allowed() {
-          return request.auth != null
-            && request.auth.token.email in ["YOUR_EMAIL@gmail.com", "ANIKA_EMAIL@gmail.com"];
-        }
-        match /couplesBingoRooms/{roomId} {
-          allow read, write: if allowed();
-        }
-      }
-    }
-
-    Also: Authentication -> Settings -> Authorized domains
-    Add: your GitHub pages domain (username.github.io) and your custom domain (if any).
-  -->
 </body>
 </html>
