@@ -1074,16 +1074,16 @@
 <body>
 
   <!-- BINGO APP BUTTON -->
-  <div class="top-right-bingo-btn" onclick="location.href='bingo.html'">
+  <a href="bingo.html" class="top-right-bingo-btn" id="bingoBtn">
     <div class="bingo-icon-wrapper">
       <img src="bingo-app-icon.png" alt="Bingo app">
       <span class="bingo-badge">0</span>
     </div>
     <span class="bingo-label">Bingo</span>
-  </div>
+  </a>
 
   <!-- WATCHLIST APP BUTTON -->
-  <a href="watchlist.html" class="top-right-watchlist-btn visible">
+  <a href="watchlist.html" class="top-right-watchlist-btn" id="watchlistBtn">
     <div class="watchlist-icon-wrapper">
       <img src="watchlist.png" alt="Watchlist">
     </div>
@@ -1091,13 +1091,13 @@
   </a>
 
   <!-- PHOTOS APP BUTTON -->
-  <div class="top-right-photos-btn" onclick="location.href='photos.html'">
+  <a href="photos.html" class="top-right-photos-btn" id="photosBtn">
     <div class="photos-icon-wrapper">
       <img src="photos-app-icon.png" alt="Photos app">
       <span class="photos-badge">+0</span>
     </div>
     <span class="photos-label">Photos</span>
-  </div>
+  </a>
 
   <!-- BETTA FISH CURSOR IMAGE -->
   <img id="bettaCursor" class="betta-cursor" src="betta-fish.png" alt="Red betta fish cursor" />
@@ -1482,6 +1482,27 @@ You don’t just stand beside me. You live in my heart 💘
       if (e.key === "bingoDoneCount") updateBingoBadgeFromStorage();
     });
 
+    // ------- TOP-RIGHT BUTTONS VISIBILITY -------
+
+    function setTopRightButtonsVisibility() {
+      const watchlist = document.getElementById("watchlistBtn");
+      const bingo = document.getElementById("bingoBtn");
+      const photos = document.getElementById("photosBtn");
+
+      const surveyVisible = document.getElementById("surveyPage") &&
+                            getComputedStyle(document.getElementById("surveyPage")).display !== "none";
+
+      // Only show on survey page
+      if (surveyVisible) {
+        watchlist?.classList.add("visible");
+        bingo?.classList.add("visible");
+        photos?.classList.add("visible");
+      } else {
+        watchlist?.classList.remove("visible");
+        bingo?.classList.remove("visible");
+        photos?.classList.remove("visible");
+      }
+    }
 
     function pulseFish() {
       if (!bettaCursor) return;
@@ -1713,8 +1734,7 @@ You don’t just stand beside me. You live in my heart 💘
     document.getElementById("continueBtn").addEventListener("click", () => {
       loveLetter.style.display = "none";
       surveyPage.style.display = "block";
-      if (photosButton) photosButton.classList.add("visible");
-      if (bingoButton)  bingoButton.classList.add("visible");
+      setTopRightButtonsVisibility();
       window.location.hash = "questions";
     });
 
