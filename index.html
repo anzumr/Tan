@@ -188,6 +188,54 @@
       .top-right-bingo-btn { top: 12px; right: 82px; }
     }
 
+    /* ---------- TOP-RIGHT WATCHLIST APP BUTTON ---------- */
+
+    .top-right-watchlist-btn {
+      position: fixed;
+      top: 18px;
+      right: 158px; /* sits to the left of Bingo */
+      display: none; /* hidden until unlocked + questions page */
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      z-index: 50;
+      text-align: center;
+      font-family: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      animation: jiggle 1.4s ease-in-out infinite;
+      transform-origin: center;
+    }
+
+    .top-right-watchlist-btn.visible { display: flex; }
+
+    .watchlist-icon-wrapper { position: relative; }
+
+    .top-right-watchlist-btn img {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+      display: block;
+      transition: transform 0.2s ease;
+      object-fit: cover;
+    }
+
+    .watchlist-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fdfdfd;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.45);
+    }
+
+    .top-right-watchlist-btn:hover img {
+      transform: translateY(-4px) scale(1.06);
+    }
+
+    /* small screens */
+    @media (max-width: 480px) {
+      .top-right-watchlist-btn { top: 12px; right: 152px; }
+    }
+
     /* ---------------- LOCK SCREEN (iPhone style) ---------------- */
 
     #lockScreen {
@@ -1033,6 +1081,14 @@
     </div>
     <span class="bingo-label">Bingo</span>
   </div>
+
+  <!-- WATCHLIST APP BUTTON -->
+  <a href="watchlist.html" class="top-right-watchlist-btn visible">
+    <div class="watchlist-icon-wrapper">
+      <img src="watchlist.png" alt="Watchlist">
+    </div>
+    <div class="watchlist-label">Watchlist</div>
+  </a>
 
   <!-- PHOTOS APP BUTTON -->
   <div class="top-right-photos-btn" onclick="location.href='photos.html'">

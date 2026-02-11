@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Watchlist 🎬</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Supabase (sync across devices). Safe to leave even if you use localStorage fallback -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{
+      --bg1:#ff8cd6;
+      --bg2:#b084f7;
+      --card: rgba(255,255,255,0.92);
+      --ink:#141414;
+
+      /* Who colors */
+      --me:#ff2a2a;     /* red */
+      --her:#ff4fc3;    /* pink */
+
+      --muted:#6b7280;
+      --border: rgba(20,20,20,0.12);
+      --rounded: 22px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--ink);
+      min-height:100vh;
+      background: radial-gradient(1200px 700px at 20% 10%, rgba(255,255,255,0.5), transparent 60%),
+                  linear-gradient(135deg, var(--bg1), var(--bg2));
+      padding: 24px;
+    }
+
+    .wrap{ max-width: 980px; margin: 0 auto; }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .title{
+      font-family: "SF Pro Display", Inter, sans-serif;
+      font-size: 34px;
+      letter-spacing: -0.02em;
+      margin:0;
+    }
+
+    .back{
+      text-decoration:none;
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(255,255,255,0.45);
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: #111;
+      font-weight: 600;
+      backdrop-filter: blur(8px);
+      transition: transform .15s ease;
+    }
+    .back:hover{ transform: translateY(-1px); }
+
+    .card{
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.55);
+      border-radius: var(--rounded);
+      padding: 18px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.10);
+      backdrop-filter: blur(10px);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.3fr 0.8fr 0.9fr 0.9fr;
+      gap: 10px;
+    }
+    @media (max-width: 760px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    label{
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      display:block;
+      margin-bottom: 6px;
+    }
+    input, select, textarea{
+      width:100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: 14px;
+      outline: none;
+      background: rgba(255,255,255,0.75);
+    }
+    textarea{ min-height: 44px; resize: vertical; }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      align-items:center;
+      justify-content: space-between;
+    }
+
+    .actions-left{ display:flex; gap:10px; flex-wrap:wrap; }
+    .actions-right{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+    button{
+      border:0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-weight: 700;
+      cursor:pointer;
+      transition: transform .12s ease;
+    }
+    button:hover{ transform: translateY(-1px); }
+
+    .btn-add{ background: #111; color: white; }
+    .btn-clear{
+      background: rgba(255,255,255,0.0);
+      border: 1px solid var(--border);
+      color: #111;
+    }
+
+    .pill{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.6);
+      border-radius: 999px;
+      padding: 8px 10px;
+      font-size: 13px;
+      display:flex;
+      gap: 8px;
+      align-items:center;
+    }
+    .pill input{
+      border:0;
+      padding:0;
+      background:transparent;
+      width: 190px;
+      font-size: 13px;
+      outline:none;
+    }
+
+    .status{
+      font-size: 12px;
+      color: rgba(20,20,20,0.6);
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(20,20,20,0.10);
+      background: rgba(255,255,255,0.55);
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .list-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin: 16px 0 10px;
+      flex-wrap: wrap;
+    }
+
+    .filters{
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+
+    #randomResult{
+      margin: 10px 0 6px;
+      font-weight: 800;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(20,20,20,0.10);
+      display:none;
+    }
+
+    ul{
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:grid;
+      gap: 10px;
+    }
+
+    .item{
+      border: 1px solid rgba(20,20,20,0.10);
+      border-radius: 18px;
+      padding: 12px 12px;
+      background: rgba(255,255,255,0.75);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    .meta{
+      display:flex;
+      flex-direction:column;
+      gap: 4px;
+      min-width:0;
+    }
+
+    .name{
+      font-weight: 800;
+      font-size: 16px;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+    .sub{
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+    .tag{
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(20,20,20,0.10);
+      background: rgba(255,255,255,0.65);
+    }
+    .notes{
+      margin-top: 6px;
+      font-size: 13px;
+      color: #222;
+      opacity: 0.9;
+      white-space: pre-wrap;
+    }
+
+    .right{
+      display:flex;
+      gap: 8px;
+      flex-shrink:0;
+      align-items:center;
+    }
+    .small{
+      font-size: 12px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.4);
+      cursor:pointer;
+      font-weight: 700;
+    }
+
+    /* Color by who */
+    .by-me .name { color: var(--me); }
+    .by-her .name { color: var(--her); }
+
+    .watched .name{
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+
+    .empty{
+      padding: 18px;
+      border: 1px dashed rgba(20,20,20,0.20);
+      border-radius: 18px;
+      color: rgba(20,20,20,0.6);
+      text-align:center;
+      background: rgba(255,255,255,0.45);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1 class="title">Watchlist 🎬</h1>
+      <!-- change href to your actual home page filename -->
+      <a class="back" href="index.html">← Back</a>
+    </div>
+
+    <div class="card">
+      <!--
+        ✅ SYNC SETUP (Supabase)
+        1) In Supabase create table "watchlist" with columns:
+           id uuid primary key default gen_random_uuid(),
+           couple_id text not null,
+           title text not null,
+           type text not null,
+           service text,
+           who text not null,
+           notes text,
+           watched boolean default false,
+           created_at timestamptz default now()
+
+        2) Paste your Supabase URL + Anon key in the JS config below.
+        3) Set COUPLE_ID (shared code for you + Anika).
+        If SUPABASE_URL/KEY are blank, this page falls back to localStorage.
+      -->
+
+      <div class="grid">
+        <div>
+          <label for="title">Title</label>
+          <input id="title" placeholder="e.g., Shōgun / Interstellar / ATLA" />
+        </div>
+
+        <div>
+          <label for="type">Type</label>
+          <select id="type">
+            <option value="Movie">Movie</option>
+            <option value="Show">Show</option>
+            <option value="Anime">Anime</option>
+            <option value="Documentary">Documentary</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="service">Streaming service</label>
+          <select id="service">
+            <option value="Netflix">Netflix</option>
+            <option value="Hulu">Hulu</option>
+            <option value="Max">Max</option>
+            <option value="Disney+">Disney+</option>
+            <option value="Prime Video">Prime Video</option>
+            <option value="Apple TV+">Apple TV+</option>
+            <option value="Peacock">Peacock</option>
+            <option value="Paramount+">Paramount+</option>
+            <option value="YouTube">YouTube</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="who">Suggested by</label>
+          <select id="who">
+            <option value="me">Me (red)</option>
+            <option value="her">Anika (pink)</option>
+          </select>
+        </div>
+
+        <div style="grid-column: 1 / -1;">
+          <label for="notes">Notes (optional)</label>
+          <textarea id="notes" placeholder="e.g., ‘After finals’, ‘Saturday night movie’, ‘Everyone says it’s amazing’"></textarea>
+        </div>
+      </div>
+
+      <div class="actions">
+        <div class="actions-left">
+          <button class="btn-add" id="addBtn">Add to list</button>
+          <button class="btn-clear" id="clearBtn" title="Deletes the whole list">Clear all</button>
+          <button class="small" id="randomBtn" title="Picks from unwatched items that match current filters">🎲 Random pick</button>
+        </div>
+
+        <div class="actions-right">
+          <div id="syncStatus" class="status">Loading…</div>
+        </div>
+      </div>
+
+      <div id="randomResult"></div>
+
+      <div class="list-head">
+        <div style="font-weight:800;">Your list</div>
+
+        <div class="filters">
+          <div class="pill">
+            🔎 <input id="search" placeholder="Search..." />
+          </div>
+
+          <select id="filterType" class="pill" style="padding:8px 10px;">
+            <option value="All">All</option>
+            <option value="Movie">Movies</option>
+            <option value="Show">Shows</option>
+            <option value="Anime">Anime</option>
+            <option value="Documentary">Docs</option>
+          </select>
+
+          <select id="filterService" class="pill" style="padding:8px 10px;">
+            <option value="All">All services</option>
+            <option value="Netflix">Netflix</option>
+            <option value="Hulu">Hulu</option>
+            <option value="Max">Max</option>
+            <option value="Disney+">Disney+</option>
+            <option value="Prime Video">Prime Video</option>
+            <option value="Apple TV+">Apple TV+</option>
+            <option value="Peacock">Peacock</option>
+            <option value="Paramount+">Paramount+</option>
+            <option value="YouTube">YouTube</option>
+            <option value="Other">Other</option>
+          </select>
+
+          <select id="filterWho" class="pill" style="padding:8px 10px;">
+            <option value="All">Both</option>
+            <option value="me">Me (red)</option>
+            <option value="her">Anika (pink)</option>
+          </select>
+        </div>
+      </div>
+
+      <ul id="list"></ul>
+      <div id="empty" class="empty" style="display:none;">
+        Nothing here yet. Add your first movie/show 👀
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**********************
+     * CONFIG
+     **********************/
+    // ✅ Paste your Supabase project details here to enable sync across devices.
+    // If left blank, the site will use localStorage only (no sync).
+    const SUPABASE_URL = "";      // e.g. "https://xxxx.supabase.co"
+    const SUPABASE_ANON_KEY = ""; // e.g. "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+
+    // Shared couple code (must match for both of your devices)
+    const COUPLE_ID = "tanzum";
+
+    // localStorage key (fallback mode)
+    const STORAGE_KEY = "tanzum_watchlist_v2";
+
+    /**********************
+     * DOM
+     **********************/
+    const $ = (id) => document.getElementById(id);
+
+    const titleEl = $("title");
+    const typeEl = $("type");
+    const serviceEl = $("service");
+    const whoEl = $("who");
+    const notesEl = $("notes");
+
+    const addBtn = $("addBtn");
+    const clearBtn = $("clearBtn");
+    const randomBtn = $("randomBtn");
+
+    const listEl = $("list");
+    const emptyEl = $("empty");
+
+    const searchEl = $("search");
+    const filterTypeEl = $("filterType");
+    const filterServiceEl = $("filterService");
+    const filterWhoEl = $("filterWho");
+
+    const randomResultEl = $("randomResult");
+    const syncStatusEl = $("syncStatus");
+
+    /**********************
+     * MODE: Supabase vs localStorage
+     **********************/
+    const usingSupabase = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
+    const supabase = usingSupabase
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    function setStatus(text){
+      syncStatusEl.textContent = text;
+    }
+
+    /**********************
+     * Helpers
+     **********************/
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function formatDate(ts){
+      const d = new Date(ts);
+      return d.toLocaleString([], { month:"short", day:"numeric", year:"numeric" });
+    }
+
+    function nowTs(){
+      return Date.now();
+    }
+
+    /**********************
+     * Data layer: localStorage
+     **********************/
+    function lsLoad(){
+      try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+      catch{ return []; }
+    }
+    function lsSave(items){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    }
+    function lsClear(){
+      localStorage.removeItem(STORAGE_KEY);
+    }
+
+    /**********************
+     * Data layer: Supabase
+     **********************/
+    async function sbLoad(){
+      const { data, error } = await supabase
+        .from("watchlist")
+        .select("*")
+        .eq("couple_id", COUPLE_ID)
+        .order("created_at", { ascending: false });
+
+      if(error){
+        console.error(error);
+        setStatus("Sync error (check keys/table)");
+        return [];
+      }
+
+      return (data || []).map(row => ({
+        id: row.id,
+        title: row.title,
+        type: row.type,
+        service: row.service || "Other",
+        who: row.who,
+        notes: row.notes || "",
+        watched: !!row.watched,
+        createdAt: new Date(row.created_at).getTime()
+      }));
+    }
+
+    async function sbAdd(item){
+      const { error } = await supabase
+        .from("watchlist")
+        .insert({
+          couple_id: COUPLE_ID,
+          title: item.title,
+          type: item.type,
+          service: item.service,
+          who: item.who,
+          notes: item.notes
+        });
+
+      if(error){
+        console.error(error);
+        setStatus("Add failed (sync)");
+        return false;
+      }
+      return true;
+    }
+
+    async function sbToggleWatched(id, nextVal){
+      const { error } = await supabase
+        .from("watchlist")
+        .update({ watched: nextVal })
+        .eq("id", id)
+        .eq("couple_id", COUPLE_ID);
+
+      if(error){
+        console.error(error);
+        setStatus("Update failed (sync)");
+        return false;
+      }
+      return true;
+    }
+
+    async function sbDelete(id){
+      const { error } = await supabase
+        .from("watchlist")
+        .delete()
+        .eq("id", id)
+        .eq("couple_id", COUPLE_ID);
+
+      if(error){
+        console.error(error);
+        setStatus("Delete failed (sync)");
+        return false;
+      }
+      return true;
+    }
+
+    async function sbClearAll(){
+      // delete everything for this couple_id
+      const { error } = await supabase
+        .from("watchlist")
+        .delete()
+        .eq("couple_id", COUPLE_ID);
+
+      if(error){
+        console.error(error);
+        setStatus("Clear failed (sync)");
+        return false;
+      }
+      return true;
+    }
+
+    /**********************
+     * Unified API
+     **********************/
+    async function loadItems(){
+      return usingSupabase ? await sbLoad() : lsLoad();
+    }
+
+    async function addItemData(item){
+      if(usingSupabase) return await sbAdd(item);
+
+      const items = lsLoad();
+      items.unshift({
+        id: (crypto.randomUUID ? crypto.randomUUID() : String(nowTs()) + Math.random()),
+        ...item,
+        createdAt: nowTs(),
+        watched: false
+      });
+      lsSave(items);
+      return true;
+    }
+
+    async function toggleWatchedData(id){
+      if(usingSupabase){
+        const items = await loadItems();
+        const found = items.find(x => x.id === id);
+        if(!found) return false;
+        return await sbToggleWatched(id, !found.watched);
+      }
+
+      const items = lsLoad();
+      const found = items.find(x => x.id === id);
+      if(!found) return false;
+      found.watched = !found.watched;
+      lsSave(items);
+      return true;
+    }
+
+    async function deleteItemData(id){
+      if(usingSupabase) return await sbDelete(id);
+
+      const items = lsLoad().filter(x => x.id !== id);
+      lsSave(items);
+      return true;
+    }
+
+    async function clearAllData(){
+      if(usingSupabase) return await sbClearAll();
+
+      lsClear();
+      return true;
+    }
+
+    /**********************
+     * Filtering + render
+     **********************/
+    function getFiltered(items){
+      const q = searchEl.value.trim().toLowerCase();
+      const ft = filterTypeEl.value;
+      const fs = filterServiceEl.value;
+      const fw = filterWhoEl.value;
+
+      return items.filter(item => {
+        const title = (item.title || "").toLowerCase();
+        const notes = (item.notes || "").toLowerCase();
+        const service = item.service || "Other";
+
+        const matchesQ = !q || title.includes(q) || notes.includes(q);
+        const matchesType = (ft === "All") || (item.type === ft);
+        const matchesService = (fs === "All") || (service === fs);
+        const matchesWho = (fw === "All") || (item.who === fw);
+
+        return matchesQ && matchesType && matchesService && matchesWho;
+      });
+    }
+
+    function showRandomResult(text){
+      randomResultEl.style.display = "block";
+      randomResultEl.textContent = text;
+    }
+
+    async function render(){
+      const items = await loadItems();
+      const filtered = getFiltered(items);
+
+      listEl.innerHTML = "";
+
+      if(filtered.length === 0){
+        emptyEl.style.display = "block";
+      }else{
+        emptyEl.style.display = "none";
+      }
+
+      for(const item of filtered){
+        const li = document.createElement("li");
+        const whoClass = item.who === "me" ? "by-me" : "by-her";
+        const watchedClass = item.watched ? "watched" : "";
+        li.className = `item ${whoClass} ${watchedClass}`;
+
+        li.innerHTML = `
+          <div class="meta">
+            <div class="name">${escapeHtml(item.title)}</div>
+            <div class="sub">
+              <span class="tag">${escapeHtml(item.type)}</span>
+              <span class="tag">${escapeHtml(item.service || "Other")}</span>
+              <span class="tag">${item.who === "me" ? "You" : "Anika"}</span>
+              <span class="tag">${formatDate(item.createdAt || nowTs())}</span>
+              ${item.watched ? `<span class="tag">✅ watched</span>` : ``}
+            </div>
+            ${item.notes ? `<div class="notes">${escapeHtml(item.notes)}</div>` : ``}
+          </div>
+          <div class="right">
+            <button class="small" data-action="watched" data-id="${escapeHtml(item.id)}">
+              ${item.watched ? "Unwatch" : "Watched"}
+            </button>
+            <button class="small" data-action="delete" data-id="${escapeHtml(item.id)}">Delete</button>
+          </div>
+        `;
+
+        listEl.appendChild(li);
+      }
+
+      if(usingSupabase){
+        setStatus(`Sync: ON • code "${COUPLE_ID}"`);
+      }else{
+        setStatus("Sync: OFF • local only");
+      }
+    }
+
+    /**********************
+     * Actions
+     **********************/
+    async function addItem(){
+      const title = titleEl.value.trim();
+      if(!title) return;
+
+      const item = {
+        title,
+        type: typeEl.value,
+        service: serviceEl.value,
+        who: whoEl.value,
+        notes: notesEl.value.trim()
+      };
+
+      const ok = await addItemData( item );
+      if(!ok) return;
+
+      titleEl.value = "";
+      notesEl.value = "";
+      titleEl.focus();
+      await render();
+    }
+
+    async function randomPick(){
+      const items = await loadItems();
+      const picks = getFiltered(items).filter(x => !x.watched);
+
+      if(picks.length === 0){
+        showRandomResult("No unwatched items match your filters 👀");
+        return;
+      }
+
+      const pick = picks[Math.floor(Math.random() * picks.length)];
+      showRandomResult(`Tonight: ${pick.title} (${pick.type}) on ${pick.service || "Other"} ✨`);
+    }
+
+    /**********************
+     * Events
+     **********************/
+    addBtn.addEventListener("click", addItem);
+
+    titleEl.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") addItem();
+    });
+
+    clearBtn.addEventListener("click", async () => {
+      const ok = confirm("Clear the entire watchlist?");
+      if(!ok) return;
+      await clearAllData();
+      randomResultEl.style.display = "none";
+      await render();
+    });
+
+    randomBtn.addEventListener("click", randomPick);
+
+    listEl.addEventListener("click", async (e) => {
+      const btn = e.target.closest("button");
+      if(!btn) return;
+
+      const id = btn.getAttribute("data-id");
+      const action = btn.getAttribute("data-action");
+
+      if(action === "watched"){
+        await toggleWatchedData(id);
+        await render();
+      }
+
+      if(action === "delete"){
+        const ok = confirm("Delete this item?");
+        if(!ok) return;
+        await deleteItemData(id);
+        await render();
+      }
+    });
+
+    [searchEl, filterTypeEl, filterServiceEl, filterWhoEl].forEach(el => {
+      el.addEventListener("input", render);
+      el.addEventListener("change", render);
+    });
+
+    /**********************
+     * Real-time sync (Supabase)
+     **********************/
+    function enableRealtime(){
+      if(!usingSupabase) return;
+
+      try{
+        supabase
+          .channel("watchlist-realtime")
+          .on(
+            "postgres_changes",
+            { event: "*", schema: "public", table: "watchlist", filter: `couple_id=eq.${COUPLE_ID}` },
+            async () => { await render(); }
+          )
+          .subscribe((status) => {
+            if(status === "SUBSCRIBED"){
+              setStatus(`Sync: ON • live • code "${COUPLE_ID}"`);
+            }
+          });
+      }catch(err){
+        console.error(err);
+        setStatus("Sync: ON (no live)");
+      }
+    }
+
+    /**********************
+     * Init
+     **********************/
+    (async function init(){
+      await render();
+      enableRealtime();
+    })();
+  </script>
+</body>
+</html>
