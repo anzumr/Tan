@@ -482,6 +482,7 @@
       solved = false;
       solving = false;
       solveStreakReset = false;
+      solveMoves = null;
       moveCount = 0;
       movesEl.textContent = "0";
 
@@ -662,75 +663,93 @@
     let solving = false;
     let solveInterval = null;
     let solveStreakReset = false;
-    let recentStates = [];
+    let solveMoves = null;
+    let solveIdx = 0;
 
-    function manhattan(arr) {
-      let dist = 0;
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i] === TOTAL - 1) continue;
-        const goalRow = Math.floor(arr[i] / GRID), goalCol = arr[i] % GRID;
-        const curRow = Math.floor(i / GRID), curCol = i % GRID;
-        dist += Math.abs(goalRow - curRow) + Math.abs(goalCol - curCol);
+    function heuristic(state) {
+      let h = 0;
+      for (let i = 0; i < TOTAL; i++) {
+        const v = state[i];
+        if (v === TOTAL - 1) continue;
+        h += Math.abs(Math.floor(v / GRID) - Math.floor(i / GRID))
+           + Math.abs((v % GRID) - (i % GRID));
       }
-      return dist;
+      return h;
     }
 
-    function getNeighbors(idx) {
-      const r = Math.floor(idx / GRID), c = idx % GRID;
-      const n = [];
-      if (r > 0) n.push(idx - GRID);
-      if (r < GRID - 1) n.push(idx + GRID);
-      if (c > 0) n.push(idx - 1);
-      if (c < GRID - 1) n.push(idx + 1);
-      return n;
+    function idaStar(startState, startEmpty) {
+      const goal = Array.from({ length: TOTAL }, (_, i) => i);
+      const goalKey = goal.join(",");
+      if (startState.join(",") === goalKey) return [];
+
+      const DR = [-1, 1, 0, 0];
+      const DC = [0, 0, -1, 1];
+      const opposite = [1, 0, 3, 2];
+
+      let bound = heuristic(startState);
+      let path = [];
+      let found = null;
+      const deadline = performance.now() + 3000;
+
+      function search(state, empty, g, lastDir) {
+        if (performance.now() > deadline) return Infinity;
+        const f = g + heuristic(state);
+        if (f > bound) return f;
+        if (heuristic(state) === 0) { found = [...path]; return -1; }
+
+        let min = Infinity;
+        const er = Math.floor(empty / GRID), ec = empty % GRID;
+
+        for (let d = 0; d < 4; d++) {
+          if (d === lastDir) continue;
+          const nr = er + DR[d], nc = ec + DC[d];
+          if (nr < 0 || nr >= GRID || nc < 0 || nc >= GRID) continue;
+          const ni = nr * GRID + nc;
+
+          state[empty] = state[ni];
+          state[ni] = TOTAL - 1;
+          path.push(ni);
+
+          const t = search(state, ni, g + 1, opposite[d]);
+          if (t === -1) return -1;
+          if (t < min) min = t;
+
+          path.pop();
+          state[ni] = state[empty];
+          state[empty] = TOTAL - 1;
+        }
+        return min;
+      }
+
+      const state = [...startState];
+      while (bound <= 80) {
+        const t = search(state, startEmpty, 0, -1);
+        if (t === -1) return found;
+        if (t === Infinity) break;
+        bound = t;
+      }
+      return null;
     }
 
-    function solveStep() {
-      if (isComplete(tiles)) {
-        stopSolving(true);
-        return;
+    function computeSolution() {
+      const result = idaStar([...tiles], emptyIdx);
+      if (result) return result;
+
+      // Fallback: direct-place each tile
+      const sim = [...tiles];
+      let simE = emptyIdx;
+      const moves = [];
+      for (let i = 0; i < TOTAL; i++) {
+        if (sim[i] === i) continue;
+        const from = sim.indexOf(i);
+        const displaced = sim[i];
+        sim[i] = i;
+        sim[from] = displaced;
+        if (displaced === TOTAL - 1) simE = from;
+        if (i === TOTAL - 1) simE = i;
+        moves.push(i);
       }
-
-      const neighbors = getNeighbors(emptyIdx);
-      let bestMove = -1;
-      let bestScore = Infinity;
-      let fallbacks = [];
-
-      for (const n of neighbors) {
-        const sim = [...tiles];
-        [sim[emptyIdx], sim[n]] = [sim[n], sim[emptyIdx]];
-        const key = sim.join(",");
-        const score = manhattan(sim);
-
-        if (recentStates.includes(key)) {
-          fallbacks.push(n);
-          continue;
-        }
-
-        if (score < bestScore) {
-          bestScore = score;
-          bestMove = n;
-        }
-      }
-
-      if (bestMove === -1) {
-        const pool = fallbacks.length ? fallbacks : neighbors;
-        bestMove = pool[Math.floor(Math.random() * pool.length)];
-      }
-
-      [tiles[emptyIdx], tiles[bestMove]] = [tiles[bestMove], tiles[emptyIdx]];
-      emptyIdx = bestMove;
-      reposition();
-      moveCount++;
-      movesEl.textContent = moveCount;
-
-      const stateKey = tiles.join(",");
-      recentStates.push(stateKey);
-      if (recentStates.length > 12) recentStates.shift();
-
-      if (isComplete(tiles)) {
-        stopSolving(true);
-      }
+      return moves.map(pos => ({ fallback: true, pos }));
     }
 
     function startSolving() {
@@ -749,62 +768,100 @@
       hintBtn.disabled = true;
       shuffleBtn.disabled = true;
 
-      recentStates = [];
-      solveInterval = setInterval(solveStep, 120);
+      if (!solveMoves) {
+        solveMoves = computeSolution();
+        solveIdx = 0;
+      }
+
+      solveInterval = setInterval(() => {
+        if (solveIdx >= solveMoves.length || isComplete(tiles)) {
+          finishSolve();
+          return;
+        }
+
+        const move = solveMoves[solveIdx];
+        if (move && move.fallback) {
+          const pos = move.pos;
+          const val = pos;
+          const cur = tiles.indexOf(val);
+          if (cur !== pos) {
+            const displaced = tiles[pos];
+            tiles[pos] = val;
+            tiles[cur] = displaced;
+            if (displaced === TOTAL - 1) emptyIdx = cur;
+            if (val === TOTAL - 1) emptyIdx = pos;
+          }
+        } else {
+          const target = move;
+          [tiles[emptyIdx], tiles[target]] = [tiles[target], tiles[emptyIdx]];
+          emptyIdx = target;
+        }
+
+        reposition();
+        moveCount++;
+        movesEl.textContent = moveCount;
+        solveIdx++;
+
+        if (solveIdx >= solveMoves.length || isComplete(tiles)) {
+          finishSolve();
+        }
+      }, 60);
     }
 
-    function stopSolving(completed) {
-      if (solveInterval) {
-        clearInterval(solveInterval);
-        solveInterval = null;
-      }
+    function finishSolve() {
+      if (solveInterval) { clearInterval(solveInterval); solveInterval = null; }
 
-      if (completed && isComplete(tiles)) {
-        solved = true;
-        solving = false;
-        stopTimer();
+      tiles = Array.from({ length: TOTAL }, (_, i) => i);
+      emptyIdx = TOTAL - 1;
+      reposition();
 
-        giveUpBtn.classList.remove("solving");
-        giveUpBtn.textContent = "🧠 Solve";
-        giveUpBtn.disabled = false;
-        hintBtn.disabled = false;
-        shuffleBtn.disabled = false;
+      solved = true;
+      solving = false;
+      solveMoves = null;
+      stopTimer();
 
-        container.querySelectorAll(".tile").forEach(t => {
-          t.classList.remove("empty");
-          if (parseInt(t.dataset.val) === TOTAL - 1) {
-            const src = "photos/" + currentPhoto;
-            const pct = 100 / (GRID - 1);
-            const srcCol = (TOTAL - 1) % GRID;
-            const srcRow = Math.floor((TOTAL - 1) / GRID);
-            t.style.backgroundImage = `url("${src}")`;
-            t.style.backgroundPosition = `${srcCol * pct}% ${srcRow * pct}%`;
-            t.style.visibility = "visible";
-          }
-          t.style.boxShadow = "none";
-          t.style.borderRadius = "0";
-        });
+      giveUpBtn.classList.remove("solving");
+      giveUpBtn.textContent = "🧠 Solve";
+      hintBtn.disabled = false;
+      shuffleBtn.disabled = false;
 
-        setTimeout(() => {
-          winTitle.textContent = "Solved! 🧠";
-          winStats.innerHTML = "The puzzle has been solved for you.<br>Streak reset to <strong>0</strong>.";
-          winOverlay.classList.add("show");
-        }, 400);
-      } else {
-        solving = false;
-        giveUpBtn.classList.remove("solving");
-        giveUpBtn.textContent = "🧠 Solve";
-        hintBtn.disabled = false;
-        shuffleBtn.disabled = false;
-      }
+      container.querySelectorAll(".tile").forEach(t => {
+        t.classList.remove("empty");
+        if (parseInt(t.dataset.val) === TOTAL - 1) {
+          const src = "photos/" + currentPhoto;
+          const pct = 100 / (GRID - 1);
+          const srcCol = (TOTAL - 1) % GRID;
+          const srcRow = Math.floor((TOTAL - 1) / GRID);
+          t.style.backgroundImage = `url("${src}")`;
+          t.style.backgroundPosition = `${srcCol * pct}% ${srcRow * pct}%`;
+          t.style.visibility = "visible";
+        }
+        t.style.boxShadow = "none";
+        t.style.borderRadius = "0";
+      });
+
+      setTimeout(() => {
+        winTitle.textContent = "Solved! 🧠";
+        winStats.innerHTML = "The puzzle has been solved for you.<br>Streak reset to <strong>0</strong>.";
+        winOverlay.classList.add("show");
+      }, 400);
+    }
+
+    function stopSolving() {
+      if (solveInterval) { clearInterval(solveInterval); solveInterval = null; }
+      solving = false;
+      giveUpBtn.classList.remove("solving");
+      giveUpBtn.textContent = "🧠 Solve";
+      hintBtn.disabled = false;
+      shuffleBtn.disabled = false;
     }
 
     giveUpBtn.addEventListener("mousedown", e => { e.preventDefault(); startSolving(); });
     giveUpBtn.addEventListener("touchstart", e => { e.preventDefault(); startSolving(); }, { passive: false });
-    giveUpBtn.addEventListener("mouseup", () => { if (solving) stopSolving(false); });
-    giveUpBtn.addEventListener("mouseleave", () => { if (solving) stopSolving(false); });
-    giveUpBtn.addEventListener("touchend", () => { if (solving) stopSolving(false); });
-    giveUpBtn.addEventListener("touchcancel", () => { if (solving) stopSolving(false); });
+    giveUpBtn.addEventListener("mouseup", () => { if (solving) stopSolving(); });
+    giveUpBtn.addEventListener("mouseleave", () => { if (solving) stopSolving(); });
+    giveUpBtn.addEventListener("touchend", () => { if (solving) stopSolving(); });
+    giveUpBtn.addEventListener("touchcancel", () => { if (solving) stopSolving(); });
 
     // --- HINT (peek at full image) ---
     hintBtn.onclick = () => {
