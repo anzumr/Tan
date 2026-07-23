@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Picture Puzzle 🧩</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --ink:#2a1a2e;
+      --muted:#7a6080;
+      --card: rgba(255,255,255,0.72);
+      --rounded: 24px;
+      --accent: #e46b8e;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      min-height:100vh;
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(255,200,235,0.5) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(200,170,255,0.4) 0%, transparent 50%),
+        linear-gradient(145deg, #f8d0e8 0%, #e0c0f0 40%, #d4b8f0 70%, #f0c8e0 100%);
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap{ max-width: 520px; margin: 0 auto; }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .title{
+      font-family: "SF Pro Display", Inter, sans-serif;
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #3a1a3e;
+    }
+
+    .back{
+      text-decoration:none;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(255,255,255,0.5);
+      padding: 10px 16px;
+      border-radius: 999px;
+      color: #3a1a3e;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .back:hover{ transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+
+    /* --- STATS BAR --- */
+    .stats{
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .stat{
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.5);
+      font-size: 13px;
+      font-weight: 600;
+      color: #3a1a3e;
+    }
+    .stat-icon{ font-size: 16px; }
+    .stat-val{ font-variant-numeric: tabular-nums; }
+
+    /* --- CARD --- */
+    .card{
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.45);
+      border-radius: var(--rounded);
+      padding: 20px;
+      box-shadow: 0 12px 48px rgba(80,20,60,0.12);
+      backdrop-filter: blur(20px);
+    }
+
+    /* --- PREVIEW --- */
+    .preview-row{
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .preview-thumb{
+      width: 56px;
+      height: 70px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,0.6);
+      box-shadow: 0 4px 12px rgba(80,20,60,0.12);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .preview-thumb:hover{ transform: scale(1.05); }
+    .preview-info{
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .preview-info strong{
+      color: #3a1a3e;
+      font-size: 15px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* --- PUZZLE GRID --- */
+    .puzzle-container{
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/5;
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.06);
+      touch-action: none;
+    }
+
+    .tile{
+      position: absolute;
+      background-size: 400% 400%;
+      cursor: pointer;
+      transition: left 0.15s cubic-bezier(0.4,0,0.2,1), top 0.15s cubic-bezier(0.4,0,0.2,1);
+      border-radius: 4px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+    }
+    .tile:hover{ z-index: 2; }
+    .tile.empty{ visibility: hidden; cursor: default; }
+
+    /* --- BUTTONS --- */
+    .btn-row{
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    button{
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      border-radius: 999px;
+      padding: 10px 20px;
+      font-weight: 600;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-primary{
+      background: linear-gradient(135deg, #e46b8e, #d44080);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(228,107,142,0.3);
+    }
+    .btn-primary:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(228,107,142,0.4);
+    }
+
+    .btn-secondary{
+      background: rgba(255,255,255,0.5);
+      color: var(--ink);
+      border: 1px solid rgba(80,20,60,0.1);
+    }
+    .btn-secondary:hover{ background: rgba(255,255,255,0.75); }
+
+    .btn-hint{
+      background: linear-gradient(135deg, #c4a8f0, #a880e0);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(168,128,224,0.3);
+    }
+    .btn-hint:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(168,128,224,0.4);
+    }
+
+    /* --- WIN OVERLAY --- */
+    .win-overlay{
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .win-overlay.show{ display: flex; }
+
+    .win-card{
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(20px);
+      border-radius: 28px;
+      padding: 36px 40px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(80,20,60,0.2);
+      border: 1px solid rgba(255,255,255,0.6);
+      max-width: 340px;
+      width: 100%;
+      animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .win-emoji{ font-size: 48px; margin-bottom: 10px; }
+    .win-title{
+      font-family: "SF Pro Display", Inter, sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #3a1a3e;
+      margin-bottom: 6px;
+    }
+    .win-stats{
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+    .win-stats strong{ color: var(--ink); }
+
+    /* --- REFERENCE OVERLAY --- */
+    .ref-overlay{
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(10px);
+      z-index: 998;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      cursor: pointer;
+    }
+    .ref-overlay.show{ display: flex; }
+    .ref-overlay img{
+      max-width: min(500px, 90vw);
+      max-height: 80vh;
+      border-radius: 16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+    }
+
+    @media (max-width: 480px){
+      .topbar{ flex-direction: column; align-items: flex-start; gap: 8px; }
+      .title{ font-size: 22px; }
+      .card{ padding: 14px; }
+      .stats{ gap: 6px; }
+      .stat{ padding: 6px 10px; font-size: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1 class="title">Picture Puzzle 🧩</h1>
+      <a class="back" href="games.html">← Games</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span class="stat-icon">⏱️</span> <span class="stat-val" id="timer">0:00</span></div>
+      <div class="stat"><span class="stat-icon">🔢</span> Moves: <span class="stat-val" id="moves">0</span></div>
+      <div class="stat"><span class="stat-icon">🔥</span> Streak: <span class="stat-val" id="streak">0</span></div>
+      <div class="stat"><span class="stat-icon">🏆</span> Best: <span class="stat-val" id="best">0</span></div>
+      <div class="stat"><span class="stat-icon">📸</span> Level: <span class="stat-val" id="level">1</span></div>
+    </div>
+
+    <div class="card">
+      <div class="preview-row">
+        <img class="preview-thumb" id="previewThumb" src="" alt="Reference" title="Click to see full photo" />
+        <div class="preview-info">
+          <strong id="photoDate">Loading...</strong>
+          <span>Slide the tiles to restore the photo. Tap the thumbnail for a hint!</span>
+        </div>
+      </div>
+
+      <div class="puzzle-container" id="puzzleContainer"></div>
+
+      <div class="btn-row">
+        <button type="button" class="btn-hint" id="hintBtn">👀 Peek</button>
+        <button type="button" class="btn-secondary" id="shuffleBtn">🔀 Reshuffle</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WIN OVERLAY -->
+  <div id="winOverlay" class="win-overlay">
+    <div class="win-card">
+      <div class="win-emoji">🎉</div>
+      <div class="win-title" id="winTitle">Solved!</div>
+      <div class="win-stats" id="winStats"></div>
+      <button type="button" class="btn-primary" id="nextBtn">Next photo →</button>
+    </div>
+  </div>
+
+  <!-- REFERENCE OVERLAY -->
+  <div id="refOverlay" class="ref-overlay">
+    <img id="refImg" src="" alt="Reference photo" />
+  </div>
+
+  <script>
+    const GRID = 4;
+    const TOTAL = GRID * GRID;
+
+    const PHOTOS = [
+      "2026-02-01-photobooth.jpg",
+      "2025-11-22-karaoke.jpg",
+      "2025-10-31-lighthouse.jpg",
+      "2025-10-18-met-rooftop.jpg",
+      "2025-10-16-date.jpg",
+      "2025-10-12-club.jpg",
+      "2025-09-14-cj-hendry.jpg",
+      "2025-07-06-tao.jpg",
+      "2025-07-04-rooftop.jpg",
+      "2025-04-17-timeout.jpg",
+      "2025-04-04-diversity.jpg",
+      "2025-04-03-salsa.jpg",
+      "2025-02-28-cuddle.jpg",
+      "2025-02-01-barrister.jpg",
+      "2025-01-18-city.jpg",
+      "2024-12-31-nye.jpg",
+      "2024-11-27-bryant-park.jpg",
+      "2024-11-23-aabea.jpg",
+      "2024-11-11-christmas.jpg",
+      "2024-10-26-dylan-halloween.jpg",
+      "2024-10-25-toy-story.jpg",
+      "2024-10-19-manhattan.jpg",
+      "2024-10-14-pumpkin-patch.jpg",
+      "2024-10-12-halloween-bar.jpg",
+      "2024-10-05-jubilee.jpg",
+      "2024-09-20-san-generero.jpg",
+      "2024-09-06-bday.jpg",
+      "2024-07-28-gantry.jpg",
+      "2024-07-25-cafe.jpg",
+      "2024-07-20-panorama-room.jpg",
+      "2024-07-19-panorama-room.jpg",
+      "2024-07-13-satleen-bday.jpg",
+      "2024-06-30-first-time-over.jpg",
+      "2024-06-20-first-date.jpg"
+    ];
+
+    const $ = id => document.getElementById(id);
+    const container = $("puzzleContainer");
+    const timerEl = $("timer");
+    const movesEl = $("moves");
+    const streakEl = $("streak");
+    const bestEl = $("best");
+    const levelEl = $("level");
+    const previewThumb = $("previewThumb");
+    const photoDateEl = $("photoDate");
+    const winOverlay = $("winOverlay");
+    const winTitle = $("winTitle");
+    const winStats = $("winStats");
+    const nextBtn = $("nextBtn");
+    const hintBtn = $("hintBtn");
+    const shuffleBtn = $("shuffleBtn");
+    const refOverlay = $("refOverlay");
+    const refImg = $("refImg");
+
+    let tiles = [];
+    let emptyIdx = TOTAL - 1;
+    let moveCount = 0;
+    let seconds = 0;
+    let timerInterval = null;
+    let solved = false;
+    let currentStreak = parseInt(localStorage.getItem("puzzle-streak") || "0", 10);
+    let bestStreak = parseInt(localStorage.getItem("puzzle-best-streak") || "0", 10);
+    let currentLevel = parseInt(localStorage.getItem("puzzle-level") || "1", 10);
+    let usedPhotos = JSON.parse(localStorage.getItem("puzzle-used") || "[]");
+    let currentPhoto = "";
+
+    streakEl.textContent = currentStreak;
+    bestEl.textContent = bestStreak;
+    levelEl.textContent = currentLevel;
+
+    function formatDate(filename) {
+      const [y, m, d] = filename.split("-").slice(0, 3).map(Number);
+      return new Date(y, m - 1, d).toLocaleDateString("en-US", {
+        month: "long", day: "numeric", year: "numeric"
+      });
+    }
+
+    function pickPhoto() {
+      let available = PHOTOS.filter(p => !usedPhotos.includes(p));
+      if (!available.length) {
+        usedPhotos = [];
+        available = [...PHOTOS];
+      }
+      const pick = available[Math.floor(Math.random() * available.length)];
+      usedPhotos.push(pick);
+      localStorage.setItem("puzzle-used", JSON.stringify(usedPhotos));
+      return pick;
+    }
+
+    function startTimer() {
+      stopTimer();
+      seconds = 0;
+      timerEl.textContent = "0:00";
+      timerInterval = setInterval(() => {
+        seconds++;
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        timerEl.textContent = m + ":" + String(s).padStart(2, "0");
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function isSolvable(arr) {
+      let inv = 0;
+      const flat = arr.filter(v => v !== TOTAL - 1);
+      for (let i = 0; i < flat.length; i++) {
+        for (let j = i + 1; j < flat.length; j++) {
+          if (flat[i] > flat[j]) inv++;
+        }
+      }
+      const emptyRow = Math.floor(arr.indexOf(TOTAL - 1) / GRID);
+      if (GRID % 2 === 1) return inv % 2 === 0;
+      return (inv + emptyRow) % 2 === 1;
+    }
+
+    function shuffle(arr) {
+      do {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+      } while (!isSolvable(arr) || isComplete(arr));
+      return arr;
+    }
+
+    function isComplete(arr) {
+      return arr.every((v, i) => v === i);
+    }
+
+    function createPuzzle(photoFile) {
+      currentPhoto = photoFile;
+      solved = false;
+      moveCount = 0;
+      movesEl.textContent = "0";
+
+      const src = "photos/" + photoFile;
+      previewThumb.src = src;
+      refImg.src = src;
+      photoDateEl.textContent = formatDate(photoFile);
+
+      const order = Array.from({ length: TOTAL }, (_, i) => i);
+      tiles = shuffle(order);
+      emptyIdx = tiles.indexOf(TOTAL - 1);
+
+      const img = new Image();
+      img.onload = () => {
+        renderTiles(src);
+        startTimer();
+      };
+      img.onerror = () => {
+        renderTiles(src);
+        startTimer();
+      };
+      img.src = src;
+    }
+
+    function renderTiles(src) {
+      container.innerHTML = "";
+      const pct = 100 / (GRID - 1);
+
+      tiles.forEach((val, idx) => {
+        const tile = document.createElement("div");
+        tile.className = "tile" + (val === TOTAL - 1 ? " empty" : "");
+        tile.dataset.val = val;
+        tile.dataset.idx = idx;
+
+        const col = idx % GRID;
+        const row = Math.floor(idx / GRID);
+        tile.style.width = (100 / GRID) + "%";
+        tile.style.height = (100 / GRID) + "%";
+        tile.style.left = (col * 100 / GRID) + "%";
+        tile.style.top = (row * 100 / GRID) + "%";
+
+        if (val !== TOTAL - 1) {
+          const srcCol = val % GRID;
+          const srcRow = Math.floor(val / GRID);
+          tile.style.backgroundImage = `url("${src}")`;
+          tile.style.backgroundPosition = `${srcCol * pct}% ${srcRow * pct}%`;
+        }
+
+        tile.addEventListener("click", () => onTileClick(idx));
+        container.appendChild(tile);
+      });
+    }
+
+    function onTileClick(idx) {
+      if (solved) return;
+      if (!isAdjacent(idx, emptyIdx)) return;
+
+      [tiles[idx], tiles[emptyIdx]] = [tiles[emptyIdx], tiles[idx]];
+
+      const tileEls = container.querySelectorAll(".tile");
+      updateTilePosition(tileEls[idx], emptyIdx);
+      updateTilePosition(tileEls[emptyIdx], idx);
+
+      const oldEmpty = emptyIdx;
+      emptyIdx = idx;
+
+      // swap DOM dataset
+      tileEls[idx].dataset.idx = oldEmpty;
+      tileEls[emptyIdx].dataset.idx = idx;
+
+      // swap in DOM array by re-rendering positions
+      const tempEl = tileEls[idx];
+      // Actually, just re-render all positions from tiles array
+      reposition();
+
+      moveCount++;
+      movesEl.textContent = moveCount;
+
+      if (isComplete(tiles)) {
+        onWin();
+      }
+    }
+
+    function reposition() {
+      const tileEls = container.querySelectorAll(".tile");
+      // We need to map val -> element
+      const valMap = {};
+      tileEls.forEach(el => { valMap[el.dataset.val] = el; });
+
+      tiles.forEach((val, idx) => {
+        const el = valMap[val];
+        if (!el) return;
+        const col = idx % GRID;
+        const row = Math.floor(idx / GRID);
+        el.style.left = (col * 100 / GRID) + "%";
+        el.style.top = (row * 100 / GRID) + "%";
+        el.dataset.idx = idx;
+      });
+    }
+
+    function updateTilePosition(el, idx) {
+      const col = idx % GRID;
+      const row = Math.floor(idx / GRID);
+      el.style.left = (col * 100 / GRID) + "%";
+      el.style.top = (row * 100 / GRID) + "%";
+    }
+
+    function isAdjacent(a, b) {
+      const rowA = Math.floor(a / GRID), colA = a % GRID;
+      const rowB = Math.floor(b / GRID), colB = b % GRID;
+      return (Math.abs(rowA - rowB) + Math.abs(colA - colB)) === 1;
+    }
+
+    function onWin() {
+      solved = true;
+      stopTimer();
+
+      currentStreak++;
+      if (currentStreak > bestStreak) {
+        bestStreak = currentStreak;
+        localStorage.setItem("puzzle-best-streak", bestStreak.toString());
+      }
+      localStorage.setItem("puzzle-streak", currentStreak.toString());
+
+      currentLevel++;
+      localStorage.setItem("puzzle-level", currentLevel.toString());
+
+      streakEl.textContent = currentStreak;
+      bestEl.textContent = bestStreak;
+
+      // reveal full image
+      container.querySelectorAll(".tile").forEach(t => {
+        t.classList.remove("empty");
+        if (parseInt(t.dataset.val) === TOTAL - 1) {
+          const src = "photos/" + currentPhoto;
+          const pct = 100 / (GRID - 1);
+          const srcCol = (TOTAL - 1) % GRID;
+          const srcRow = Math.floor((TOTAL - 1) / GRID);
+          t.style.backgroundImage = `url("${src}")`;
+          t.style.backgroundPosition = `${srcCol * pct}% ${srcRow * pct}%`;
+          t.style.visibility = "visible";
+        }
+        t.style.boxShadow = "none";
+        t.style.borderRadius = "0";
+      });
+
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      const timeStr = m + ":" + String(s).padStart(2, "0");
+
+      const titles = ["Solved!", "Beautiful!", "Nailed it!", "Amazing!", "Perfect!"];
+      winTitle.textContent = titles[Math.floor(Math.random() * titles.length)] + " 🎉";
+      winStats.innerHTML =
+        `<strong>${moveCount}</strong> moves in <strong>${timeStr}</strong><br>` +
+        `Streak: <strong>${currentStreak}</strong> · Best: <strong>${bestStreak}</strong>`;
+
+      setTimeout(() => {
+        winOverlay.classList.add("show");
+      }, 500);
+    }
+
+    // --- NEXT LEVEL ---
+    nextBtn.onclick = () => {
+      winOverlay.classList.remove("show");
+      levelEl.textContent = currentLevel;
+      createPuzzle(pickPhoto());
+    };
+
+    // --- SHUFFLE ---
+    shuffleBtn.onclick = () => {
+      currentStreak = 0;
+      localStorage.setItem("puzzle-streak", "0");
+      streakEl.textContent = "0";
+      createPuzzle(pickPhoto());
+    };
+
+    // --- HINT (peek at full image) ---
+    hintBtn.onclick = () => {
+      refOverlay.classList.add("show");
+    };
+
+    previewThumb.onclick = () => {
+      refOverlay.classList.add("show");
+    };
+
+    refOverlay.onclick = () => {
+      refOverlay.classList.remove("show");
+    };
+
+    window.addEventListener("keydown", e => {
+      if (e.key === "Escape") {
+        refOverlay.classList.remove("show");
+        winOverlay.classList.remove("show");
+      }
+    });
+
+    // --- TOUCH / SWIPE SUPPORT ---
+    let touchStartX = 0, touchStartY = 0;
+
+    container.addEventListener("touchstart", e => {
+      if (e.touches.length !== 1) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    container.addEventListener("touchend", e => {
+      if (solved) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) < 15 && Math.abs(dy) < 15) return;
+
+      const emptyRow = Math.floor(emptyIdx / GRID);
+      const emptyCol = emptyIdx % GRID;
+      let targetIdx = -1;
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0 && emptyCol > 0) targetIdx = emptyIdx - 1;
+        else if (dx < 0 && emptyCol < GRID - 1) targetIdx = emptyIdx + 1;
+      } else {
+        if (dy > 0 && emptyRow > 0) targetIdx = emptyIdx - GRID;
+        else if (dy < 0 && emptyRow < GRID - 1) targetIdx = emptyIdx + GRID;
+      }
+
+      if (targetIdx >= 0 && targetIdx < TOTAL) {
+        onTileClick(targetIdx);
+      }
+    }, { passive: true });
+
+    // --- KEYBOARD SUPPORT ---
+    window.addEventListener("keydown", e => {
+      if (solved) return;
+      const emptyRow = Math.floor(emptyIdx / GRID);
+      const emptyCol = emptyIdx % GRID;
+      let targetIdx = -1;
+
+      switch(e.key) {
+        case "ArrowUp":    if (emptyRow < GRID - 1) targetIdx = emptyIdx + GRID; break;
+        case "ArrowDown":  if (emptyRow > 0) targetIdx = emptyIdx - GRID; break;
+        case "ArrowLeft":  if (emptyCol < GRID - 1) targetIdx = emptyIdx + 1; break;
+        case "ArrowRight": if (emptyCol > 0) targetIdx = emptyIdx - 1; break;
+      }
+
+      if (targetIdx >= 0) {
+        e.preventDefault();
+        onTileClick(targetIdx);
+      }
+    });
+
+    // --- INIT ---
+    createPuzzle(pickPhoto());
+  </script>
+</body>
+</html>
