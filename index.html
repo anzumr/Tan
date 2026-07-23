@@ -260,60 +260,139 @@
     }
 
     .pw-card {
-      background: rgba(255,255,255,0.06);
-      backdrop-filter: blur(20px);
-      padding: 32px 28px;
-      border-radius: 24px;
-      max-width: 340px;
+      padding: 40px 20px 24px;
+      max-width: 320px;
       width: 100%;
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .pw-title { font-size: 20px; margin-bottom: 8px; font-weight: 500; }
-    .pw-sub   { font-size: 13px; opacity: 0.7; margin-bottom: 20px; font-weight: 300; }
-
-    .pw-input {
-      width: 100%;
-      padding: 14px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(255,255,255,0.06);
-      color: #fff;
-      font-size: 20px;
-      text-align: center;
-      margin-bottom: 14px;
-      letter-spacing: 6px;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .pw-input:focus {
-      outline: none;
-      border-color: rgba(240,160,212,0.5);
-      box-shadow: 0 0 0 3px rgba(240,160,212,0.12);
-    }
-
-    .pw-button {
-      width: 100%;
-      padding: 13px 16px;
-      border-radius: 999px;
-      border: none;
-      background: linear-gradient(135deg, var(--pink1), var(--purple1));
-      color: #fff;
-      font-size: 15px;
-      cursor: pointer;
+    .pw-title {
+      font-size: 18px;
+      margin-bottom: 6px;
       font-weight: 500;
-      letter-spacing: 0.02em;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 4px 20px rgba(200,140,220,0.3);
+      letter-spacing: 0.01em;
+    }
+    .pw-sub {
+      font-size: 12px;
+      opacity: 0.6;
+      margin-bottom: 24px;
+      font-weight: 300;
     }
 
-    .pw-button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 28px rgba(200,140,220,0.4);
+    .pw-dots {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
     }
 
-    .pw-error { margin-top: 10px; font-size: 12px; color: #ffb0c0; min-height: 16px; font-weight: 400; }
+    .pw-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.5);
+      background: transparent;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .pw-dot.filled {
+      background: #fff;
+      border-color: #fff;
+    }
+
+    @keyframes dotPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+    .pw-dot.pop { animation: dotPop 0.15s ease; }
+
+    @keyframes pwShake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-10px); }
+      40% { transform: translateX(10px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(6px); }
+    }
+    .pw-dots.shake {
+      animation: pwShake 0.4s ease;
+    }
+    .pw-dots.shake .pw-dot {
+      border-color: #ff6b8a;
+      background: transparent;
+    }
+
+    .pw-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .pw-key {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.07);
+      color: #fff;
+      font-family: "SF Pro Display", system-ui, -apple-system, sans-serif;
+      font-size: 32px;
+      font-weight: 300;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.12s ease, transform 0.1s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .pw-key:active {
+      background: rgba(255,255,255,0.25);
+      transform: scale(0.95);
+    }
+
+    .pw-key-letters {
+      font-size: 9px;
+      letter-spacing: 2px;
+      font-weight: 400;
+      opacity: 0.5;
+      margin-top: 2px;
+    }
+
+    .pw-key.pw-key-empty {
+      border: none;
+      background: none;
+      cursor: default;
+    }
+
+    .pw-key.pw-key-delete {
+      border: none;
+      background: none;
+      font-size: 16px;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+    .pw-key.pw-key-delete:active {
+      opacity: 1;
+      background: none;
+    }
+
+    .pw-error {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #ffb0c0;
+      min-height: 16px;
+      font-weight: 400;
+    }
+
+    @media (max-width: 360px) {
+      .pw-keypad { grid-template-columns: repeat(3, 68px); gap: 10px; }
+      .pw-key { width: 68px; height: 68px; font-size: 28px; }
+    }
 
     /* -------- LOVE LETTER SCREEN -------- */
 
@@ -960,10 +1039,31 @@
     <div class="pw-card">
       <div class="pw-title">Enter Passcode</div>
       <div class="pw-sub">Yes, you’re the only one who gets this 💗</div>
-      <input id="pwInput" class="pw-input" type="password" maxlength="8" placeholder="••••" />
-      <button id="pwBtn" class="pw-button">Continue</button>
+
+      <div class="pw-dots" id="pwDots">
+        <div class="pw-dot" id="dot0"></div>
+        <div class="pw-dot" id="dot1"></div>
+        <div class="pw-dot" id="dot2"></div>
+        <div class="pw-dot" id="dot3"></div>
+      </div>
+
+      <div class="pw-keypad" id="pwKeypad">
+        <button class="pw-key" data-digit="1"><span>1</span></button>
+        <button class="pw-key" data-digit="2"><span>2</span><span class="pw-key-letters">ABC</span></button>
+        <button class="pw-key" data-digit="3"><span>3</span><span class="pw-key-letters">DEF</span></button>
+        <button class="pw-key" data-digit="4"><span>4</span><span class="pw-key-letters">GHI</span></button>
+        <button class="pw-key" data-digit="5"><span>5</span><span class="pw-key-letters">JKL</span></button>
+        <button class="pw-key" data-digit="6"><span>6</span><span class="pw-key-letters">MNO</span></button>
+        <button class="pw-key" data-digit="7"><span>7</span><span class="pw-key-letters">PQRS</span></button>
+        <button class="pw-key" data-digit="8"><span>8</span><span class="pw-key-letters">TUV</span></button>
+        <button class="pw-key" data-digit="9"><span>9</span><span class="pw-key-letters">WXYZ</span></button>
+        <button class="pw-key pw-key-empty"></button>
+        <button class="pw-key" data-digit="0"><span>0</span></button>
+        <button class="pw-key pw-key-delete" id="pwDelete">Delete</button>
+      </div>
+
       <div id="pwError" class="pw-error"></div>
-      <div style="margin-top:10px;font-size:12px;opacity:0.9;">(I’ll tell you the password 🫶)</div>
+      <div style="margin-top:8px;font-size:12px;opacity:0.6;">(I’ll tell you the password 🫶)</div>
     </div>
   </div>
 
@@ -1466,23 +1566,71 @@
     // ------- PASSWORD LOGIC -------
 
     const PASSWORD = "0618";
-    const pwInput  = document.getElementById("pwInput");
-    const pwBtn    = document.getElementById("pwBtn");
     const pwError  = document.getElementById("pwError");
+    const pwDots   = document.getElementById("pwDots");
+    const pwKeypad = document.getElementById("pwKeypad");
+    const pwDelete = document.getElementById("pwDelete");
+    let pwCode = "";
 
-    pwBtn.addEventListener("click", () => {
-      const value = pwInput.value.trim();
-      if (value === PASSWORD) {
-        passwordPage.style.display = "none";
-        loveLetter.style.display = "flex";
+    function updateDots() {
+      for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById("dot" + i);
+        if (i < pwCode.length) {
+          dot.classList.add("filled");
+        } else {
+          dot.classList.remove("filled");
+        }
+      }
+    }
+
+    function addDigit(d) {
+      if (pwCode.length >= 4) return;
+      pwCode += d;
+      updateDots();
+
+      const dot = document.getElementById("dot" + (pwCode.length - 1));
+      dot.classList.remove("pop");
+      void dot.offsetWidth;
+      dot.classList.add("pop");
+
+      if (pwCode.length === 4) {
+        setTimeout(() => {
+          if (pwCode === PASSWORD) {
+            passwordPage.style.display = "none";
+            loveLetter.style.display = "flex";
+            pwError.textContent = "";
+            pwCode = "";
+            updateDots();
+          } else {
+            pwDots.classList.add("shake");
+            pwError.textContent = "Wrong passcode, try again 😅";
+            setTimeout(() => {
+              pwDots.classList.remove("shake");
+              pwCode = "";
+              updateDots();
+            }, 500);
+          }
+        }, 200);
+      }
+    }
+
+    pwKeypad.addEventListener("click", e => {
+      const key = e.target.closest("[data-digit]");
+      if (key) addDigit(key.dataset.digit);
+    });
+
+    pwDelete.addEventListener("click", () => {
+      if (pwCode.length > 0) {
+        pwCode = pwCode.slice(0, -1);
+        updateDots();
         pwError.textContent = "";
-      } else {
-        pwError.textContent = "Wrong passcode, try again 😅";
       }
     });
 
-    pwInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") pwBtn.click();
+    window.addEventListener("keydown", e => {
+      if (passwordPage.style.display === "none") return;
+      if (e.key >= "0" && e.key <= "9") addDigit(e.key);
+      if (e.key === "Backspace") pwDelete.click();
     });
 
     // ------- LOVE LETTER CONTINUE -------
