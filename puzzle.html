@@ -195,6 +195,19 @@
       box-shadow: 0 6px 22px rgba(168,128,224,0.4);
     }
 
+    .btn-giveup{
+      background: rgba(255,255,255,0.5);
+      color: var(--ink);
+      border: 1px solid rgba(80,20,60,0.1);
+    }
+    .btn-giveup:hover:not(:disabled){ background: rgba(255,255,255,0.75); }
+    .btn-giveup:disabled{ opacity: 0.5; cursor: not-allowed; }
+    .btn-giveup.solving{
+      background: linear-gradient(135deg, #f0a0d4, #c4a8f0);
+      color: #fff;
+      border-color: transparent;
+    }
+
     /* --- WIN OVERLAY --- */
     .win-overlay{
       display: none;
@@ -303,6 +316,7 @@
       <div class="btn-row">
         <button type="button" class="btn-hint" id="hintBtn">👀 Peek</button>
         <button type="button" class="btn-secondary" id="shuffleBtn">🔀 Reshuffle</button>
+        <button type="button" class="btn-giveup" id="giveUpBtn">🏳️ Give Up</button>
       </div>
     </div>
   </div>
@@ -378,6 +392,7 @@
     const nextBtn = $("nextBtn");
     const hintBtn = $("hintBtn");
     const shuffleBtn = $("shuffleBtn");
+    const giveUpBtn = $("giveUpBtn");
     const refOverlay = $("refOverlay");
     const refImg = $("refImg");
 
@@ -640,6 +655,98 @@
       streakEl.textContent = "0";
       createPuzzle(pickPhoto());
     };
+
+    // --- GIVE UP (auto-solve) ---
+    let solving = false;
+
+    giveUpBtn.onclick = () => {
+      if (solved || solving) return;
+      if (!confirm("Give up? This resets your streak.")) return;
+
+      solving = true;
+      solved = true;
+      stopTimer();
+
+      currentStreak = 0;
+      localStorage.setItem("puzzle-streak", "0");
+      streakEl.textContent = "0";
+
+      giveUpBtn.classList.add("solving");
+      giveUpBtn.textContent = "Solving...";
+      giveUpBtn.disabled = true;
+      hintBtn.disabled = true;
+      shuffleBtn.disabled = true;
+
+      autoSolve();
+    };
+
+    function autoSolve() {
+      // Animate tiles snapping into place one by one, top-left to bottom-right
+      const order = [];
+      for (let i = 0; i < TOTAL; i++) {
+        if (tiles[i] !== i) order.push(i);
+      }
+
+      let i = 0;
+      function step() {
+        if (i >= order.length) {
+          // All placed — make sure array is correct
+          tiles = Array.from({ length: TOTAL }, (_, j) => j);
+          emptyIdx = TOTAL - 1;
+          reposition();
+
+          solving = false;
+          giveUpBtn.classList.remove("solving");
+          giveUpBtn.textContent = "🏳️ Give Up";
+          giveUpBtn.disabled = false;
+          hintBtn.disabled = false;
+          shuffleBtn.disabled = false;
+
+          // Reveal the full image
+          container.querySelectorAll(".tile").forEach(t => {
+            t.classList.remove("empty");
+            if (parseInt(t.dataset.val) === TOTAL - 1) {
+              const src = "photos/" + currentPhoto;
+              const pct = 100 / (GRID - 1);
+              const srcCol = (TOTAL - 1) % GRID;
+              const srcRow = Math.floor((TOTAL - 1) / GRID);
+              t.style.backgroundImage = `url("${src}")`;
+              t.style.backgroundPosition = `${srcCol * pct}% ${srcRow * pct}%`;
+              t.style.visibility = "visible";
+            }
+            t.style.boxShadow = "none";
+            t.style.borderRadius = "0";
+          });
+
+          setTimeout(() => {
+            winTitle.textContent = "Maybe next time! 💪";
+            winStats.innerHTML = "The puzzle has been solved for you.<br>Streak reset to <strong>0</strong>.";
+            winOverlay.classList.add("show");
+          }, 400);
+          return;
+        }
+
+        // Place the next out-of-order tile into its correct spot
+        const targetPos = order[i];
+        const val = targetPos;
+        const currentPos = tiles.indexOf(val);
+
+        if (currentPos !== targetPos) {
+          // Swap in the array
+          const displaced = tiles[targetPos];
+          tiles[targetPos] = val;
+          tiles[currentPos] = displaced;
+          if (displaced === TOTAL - 1) emptyIdx = currentPos;
+          if (val === TOTAL - 1) emptyIdx = targetPos;
+          reposition();
+        }
+
+        i++;
+        setTimeout(step, 250);
+      }
+
+      step();
+    }
 
     // --- HINT (peek at full image) ---
     hintBtn.onclick = () => {
