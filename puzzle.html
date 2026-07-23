@@ -130,7 +130,7 @@
     .puzzle-container{
       position: relative;
       width: 100%;
-      aspect-ratio: 4/5;
+      aspect-ratio: 1/1;
       border-radius: 16px;
       overflow: hidden;
       background: rgba(0,0,0,0.06);
@@ -139,7 +139,6 @@
 
     .tile{
       position: absolute;
-      background-size: 400% 400%;
       cursor: pointer;
       transition: left 0.15s cubic-bezier(0.4,0,0.2,1), top 0.15s cubic-bezier(0.4,0,0.2,1);
       border-radius: 4px;
@@ -147,6 +146,32 @@
     }
     .tile:hover{ z-index: 2; }
     .tile.empty{ visibility: hidden; cursor: default; }
+
+    /* --- GRID TOGGLE --- */
+    .grid-toggle{
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .grid-btn{
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(80,20,60,0.12);
+      background: rgba(255,255,255,0.5);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .grid-btn:hover{ background: rgba(255,255,255,0.75); }
+    .grid-btn.active{
+      background: linear-gradient(135deg, #e46b8e, #d44080);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 16px rgba(228,107,142,0.3);
+    }
 
     /* --- BUTTONS --- */
     .btn-row{
@@ -311,10 +336,16 @@
         </div>
       </div>
 
+      <div class="grid-toggle">
+        <button type="button" class="grid-btn active" data-grid="3">3×3</button>
+        <button type="button" class="grid-btn" data-grid="4">4×4</button>
+      </div>
+
       <div class="puzzle-container" id="puzzleContainer"></div>
 
       <div class="btn-row">
         <button type="button" class="btn-hint" id="hintBtn">👀 Peek</button>
+        <button type="button" class="btn-secondary" id="skipBtn">⏭️ Skip</button>
         <button type="button" class="btn-secondary" id="shuffleBtn">🔀 Reshuffle</button>
         <button type="button" class="btn-giveup" id="giveUpBtn">🧠 Solve</button>
       </div>
@@ -337,8 +368,8 @@
   </div>
 
   <script>
-    const GRID = 4;
-    const TOTAL = GRID * GRID;
+    let GRID = parseInt(localStorage.getItem("puzzle-grid") || "3", 10);
+    let TOTAL = GRID * GRID;
 
     const PHOTOS = [
       "2026-02-01-photobooth.jpg",
@@ -391,6 +422,7 @@
     const winStats = $("winStats");
     const nextBtn = $("nextBtn");
     const hintBtn = $("hintBtn");
+    const skipBtn = $("skipBtn");
     const shuffleBtn = $("shuffleBtn");
     const giveUpBtn = $("giveUpBtn");
     const refOverlay = $("refOverlay");
@@ -510,6 +542,7 @@
     function renderTiles(src) {
       container.innerHTML = "";
       const pct = 100 / (GRID - 1);
+      const bgSize = (GRID * 100) + "% " + (GRID * 100) + "%";
 
       tiles.forEach((val, idx) => {
         const tile = document.createElement("div");
@@ -528,6 +561,7 @@
           const srcCol = val % GRID;
           const srcRow = Math.floor(val / GRID);
           tile.style.backgroundImage = `url("${src}")`;
+          tile.style.backgroundSize = bgSize;
           tile.style.backgroundPosition = `${srcCol * pct}% ${srcRow * pct}%`;
         }
 
@@ -622,6 +656,7 @@
           const srcCol = (TOTAL - 1) % GRID;
           const srcRow = Math.floor((TOTAL - 1) / GRID);
           t.style.backgroundImage = `url("${src}")`;
+          t.style.backgroundSize = (GRID * 100) + "% " + (GRID * 100) + "%";
           t.style.backgroundPosition = `${srcCol * pct}% ${srcRow * pct}%`;
           t.style.visibility = "visible";
         }
@@ -651,6 +686,11 @@
       createPuzzle(pickPhoto());
     };
 
+    // --- SKIP ---
+    skipBtn.onclick = () => {
+      createPuzzle(pickPhoto());
+    };
+
     // --- SHUFFLE ---
     shuffleBtn.onclick = () => {
       currentStreak = 0;
@@ -658,6 +698,23 @@
       streakEl.textContent = "0";
       createPuzzle(pickPhoto());
     };
+
+    // --- GRID TOGGLE ---
+    document.querySelectorAll(".grid-btn").forEach(btn => {
+      if (parseInt(btn.dataset.grid) === GRID) btn.classList.add("active");
+      else btn.classList.remove("active");
+
+      btn.onclick = () => {
+        const newGrid = parseInt(btn.dataset.grid);
+        if (newGrid === GRID) return;
+        GRID = newGrid;
+        TOTAL = GRID * GRID;
+        localStorage.setItem("puzzle-grid", GRID.toString());
+        document.querySelectorAll(".grid-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        createPuzzle(pickPhoto());
+      };
+    });
 
     // --- SOLVE (hold to auto-solve) ---
     let solving = false;
@@ -833,6 +890,7 @@
           const srcCol = (TOTAL - 1) % GRID;
           const srcRow = Math.floor((TOTAL - 1) / GRID);
           t.style.backgroundImage = `url("${src}")`;
+          t.style.backgroundSize = (GRID * 100) + "% " + (GRID * 100) + "%";
           t.style.backgroundPosition = `${srcCol * pct}% ${srcRow * pct}%`;
           t.style.visibility = "visible";
         }
