@@ -935,7 +935,13 @@
         if(spotifyToken) playlistBtn.disabled = currentItems.length === 0;
       }, err => {
         console.error(err);
-        setStatus("Error syncing");
+        if(err.code === "permission-denied" || err.code === "PERMISSION_DENIED"){
+          setStatus("Firestore rules: check permissions");
+        } else if(err.message?.includes("index")){
+          setStatus("Needs Firestore index — check console");
+        } else {
+          setStatus("Error: " + (err.code || err.message || "sync failed"));
+        }
       });
     }
 
