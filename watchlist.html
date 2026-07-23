@@ -13,11 +13,8 @@
       --bg2:#c4a8f0;
       --card: rgba(255,255,255,0.72);
       --ink:#2a1a2e;
-
-      /* Who colors */
       --me:#e03030;
       --her:#e060a8;
-
       --muted:#7a6080;
       --border: rgba(80,20,60,0.1);
       --rounded: 24px;
@@ -26,7 +23,7 @@
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-family: Inter, system-ui, -apple-system, sans-serif;
       color: var(--ink);
       min-height:100vh;
       background:
@@ -79,13 +76,19 @@
       backdrop-filter: blur(20px);
     }
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1.3fr 0.8fr 0.9fr 0.9fr;
-      gap: 10px;
+    /* --- ADD FORM --- */
+    .add-form{
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: end;
     }
-    @media (max-width: 760px){
-      .grid{ grid-template-columns: 1fr; }
+    @media (max-width: 600px){
+      .add-form{ grid-template-columns: 1fr; }
+    }
+
+    .search-wrap{
+      position: relative;
     }
 
     label{
@@ -95,6 +98,7 @@
       display:block;
       margin-bottom: 6px;
     }
+
     input, select, textarea{
       width:100%;
       border: 1px solid rgba(255,255,255,0.5);
@@ -113,6 +117,159 @@
     }
     textarea{ min-height: 44px; resize: vertical; }
 
+    /* --- SEARCH RESULTS DROPDOWN --- */
+    .search-results{
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      margin-top: 4px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(80,20,60,0.15);
+      max-height: 340px;
+      overflow-y: auto;
+      z-index: 100;
+      display: none;
+    }
+    .search-results.open{ display: block; }
+
+    .search-results::-webkit-scrollbar{ width: 6px; }
+    .search-results::-webkit-scrollbar-track{ background: transparent; }
+    .search-results::-webkit-scrollbar-thumb{ background: rgba(200,160,220,0.3); border-radius: 3px; }
+
+    .sr-item{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+    .sr-item:last-child{ border-bottom: none; }
+    .sr-item:first-child{ border-radius: 16px 16px 0 0; }
+    .sr-item:last-child{ border-radius: 0 0 16px 16px; }
+    .sr-item:only-child{ border-radius: 16px; }
+    .sr-item:hover{ background: rgba(240,200,230,0.2); }
+
+    .sr-poster{
+      width: 40px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #e8d8f0;
+      flex-shrink: 0;
+    }
+    .sr-no-poster{
+      width: 40px;
+      height: 60px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #e8d0e8, #d0c0e8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .sr-info{ min-width: 0; }
+    .sr-title{
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .sr-meta{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .sr-loading, .sr-empty{
+      padding: 16px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* --- SELECTED PREVIEW --- */
+    .selected-preview{
+      display: none;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 14px;
+      margin-top: 10px;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 16px;
+    }
+    .selected-preview.show{ display: flex; }
+
+    .sp-poster{
+      width: 52px;
+      height: 78px;
+      border-radius: 10px;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .sp-info{ flex: 1; min-width: 0; }
+    .sp-title{ font-weight: 700; font-size: 15px; line-height: 1.3; }
+    .sp-type{ font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .sp-providers{
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .sp-provider{
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(240,160,212,0.15);
+      border: 1px solid rgba(240,160,212,0.25);
+      color: #5a2050;
+      font-weight: 500;
+    }
+    .sp-no-providers{
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .sp-clear{
+      font-size: 18px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: color 0.15s;
+    }
+    .sp-clear:hover{ color: var(--ink); transform: none; }
+
+    /* --- EXTRA FIELDS ROW --- */
+    .extra-fields{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    @media (max-width: 600px){
+      .extra-fields{ grid-template-columns: 1fr; }
+    }
+    .extra-fields .full{ grid-column: 1 / -1; }
+
+    /* --- ACTIONS --- */
     .actions{
       display:flex;
       gap: 10px;
@@ -121,7 +278,6 @@
       align-items:center;
       justify-content: space-between;
     }
-
     .actions-left{ display:flex; gap:10px; flex-wrap:wrap; }
     .actions-right{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
 
@@ -170,17 +326,10 @@
       gap: 8px;
       align-items:center;
     }
-    select.pill{
-      width: auto;
-      display: inline-block;
-    }
+    select.pill{ width: auto; display: inline-block; }
     .pill input{
-      border:0;
-      padding:0;
-      background:transparent;
-      width: 190px;
-      font-size: 13px;
-      outline:none;
+      border:0; padding:0; background:transparent;
+      width: 190px; font-size: 13px; outline:none;
     }
 
     .status{
@@ -224,6 +373,7 @@
       display:none;
     }
 
+    /* --- LIST --- */
     ul{
       list-style:none;
       padding:0;
@@ -235,12 +385,11 @@
     .item{
       border: 1px solid rgba(255,255,255,0.4);
       border-radius: 18px;
-      padding: 14px 14px;
+      padding: 12px 14px;
       background: rgba(255,255,255,0.6);
       backdrop-filter: blur(6px);
       display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
+      align-items:center;
       gap: 12px;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -249,16 +398,37 @@
       box-shadow: 0 6px 20px rgba(80,20,60,0.08);
     }
 
+    .item-poster{
+      width: 48px;
+      height: 72px;
+      border-radius: 10px;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    .item-no-poster{
+      width: 48px;
+      height: 72px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #e8d0e8, #d0c0e8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
     .meta{
       display:flex;
       flex-direction:column;
       gap: 4px;
       min-width:0;
+      flex: 1;
     }
 
     .name{
       font-weight: 700;
-      font-size: 16px;
+      font-size: 15px;
       line-height: 1.2;
       word-break: break-word;
     }
@@ -266,19 +436,19 @@
       font-size: 12px;
       color: var(--muted);
       display:flex;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
       align-items:center;
     }
     .tag{
       font-size: 11px;
-      padding: 4px 8px;
+      padding: 3px 7px;
       border-radius: 999px;
       border: 1px solid rgba(255,255,255,0.4);
       background: rgba(255,255,255,0.55);
     }
     .notes{
-      margin-top: 6px;
+      margin-top: 4px;
       font-size: 13px;
       color: #3a2040;
       opacity: 0.85;
@@ -287,7 +457,7 @@
 
     .right{
       display:flex;
-      gap: 8px;
+      gap: 6px;
       flex-shrink:0;
       align-items:center;
     }
@@ -304,7 +474,6 @@
     }
     .small:hover{ transform: translateY(-1px); }
 
-    /* Color by who */
     .by-me .name { color: var(--me); }
     .by-her .name { color: var(--her); }
 
@@ -312,6 +481,7 @@
       text-decoration: line-through;
       opacity: 0.55;
     }
+    .watched .item-poster{ opacity: 0.5; filter: grayscale(0.4); }
 
     .empty{
       padding: 20px;
@@ -332,57 +502,47 @@
     </div>
 
     <div class="card">
-      <div class="grid">
-        <div>
-          <label for="title">Title</label>
-          <input id="title" placeholder="e.g., Shōgun / Interstellar / ATLA" />
+      <!-- SEARCH + ADD -->
+      <div class="add-form">
+        <div class="search-wrap">
+          <label for="searchInput">Search for a movie or show</label>
+          <input id="searchInput" placeholder="e.g., Interstellar, Shōgun, ATLA..." autocomplete="off" />
+          <div id="searchResults" class="search-results"></div>
         </div>
-
-        <div>
-          <label for="type">Type</label>
-          <select id="type">
-            <option value="Movie">Movie</option>
-            <option value="Show">Show</option>
-            <option value="Anime">Anime</option>
-            <option value="Documentary">Documentary</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="service">Streaming service</label>
-          <select id="service">
-            <option value="Netflix">Netflix</option>
-            <option value="Hulu">Hulu</option>
-            <option value="Max">Max</option>
-            <option value="Disney+">Disney+</option>
-            <option value="Prime Video">Prime Video</option>
-            <option value="Apple TV+">Apple TV+</option>
-            <option value="Peacock">Peacock</option>
-            <option value="Paramount+">Paramount+</option>
-            <option value="YouTube">YouTube</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
         <div>
           <label for="who">Suggested by</label>
           <select id="who">
-            <option value="me">Anzum (red)</option>
-            <option value="her">Anika (pink)</option>
+            <option value="me">Anzum</option>
+            <option value="her">Anika</option>
           </select>
-        </div>
-
-        <div style="grid-column: 1 / -1;">
-          <label for="notes">Notes (optional)</label>
-          <textarea id="notes" placeholder="e.g., ‘After finals’, ‘Saturday night movie’, ‘Everyone says it’s amazing’"></textarea>
         </div>
       </div>
 
+      <!-- SELECTED PREVIEW -->
+      <div id="selectedPreview" class="selected-preview">
+        <img id="spPoster" class="sp-poster" src="" alt="">
+        <div class="sp-info">
+          <div id="spTitle" class="sp-title"></div>
+          <div id="spType" class="sp-type"></div>
+          <div id="spProviders" class="sp-providers"></div>
+        </div>
+        <button type="button" class="sp-clear" id="spClear" title="Clear selection">×</button>
+      </div>
+
+      <!-- EXTRA FIELDS -->
+      <div class="extra-fields">
+        <div class="full">
+          <label for="notes">Notes (optional)</label>
+          <textarea id="notes" placeholder="e.g., 'After finals', 'Saturday night movie'"></textarea>
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
       <div class="actions">
         <div class="actions-left">
-          <button type="button" class="btn-add" id="addBtn">Add to list</button>
-          <button type="button" class="btn-clear" id="clearBtn" title="Deletes the whole list">Clear all</button>
-          <button type="button" class="small" id="randomBtn" title="Picks from unwatched items that match current filters">🎲 Random pick</button>
+          <button type="button" class="btn-add" id="addBtn" disabled>Add to list</button>
+          <button type="button" class="btn-clear" id="clearBtn">Clear all</button>
+          <button type="button" class="small" id="randomBtn" title="Picks from unwatched items">🎲 Random pick</button>
         </div>
 
         <div class="actions-right">
@@ -394,79 +554,43 @@
 
       <div id="randomResult"></div>
 
+      <!-- FILTERS + LIST -->
       <div class="list-head">
         <div style="font-weight:800;">Your list</div>
-
         <div class="filters">
           <div class="pill">
-            🔎 <input id="search" placeholder="Search..." />
+            🔎 <input id="filterSearch" placeholder="Search list..." />
           </div>
-
           <select id="filterType" class="pill" style="padding:8px 10px;">
             <option value="All">All</option>
             <option value="Movie">Movies</option>
             <option value="Show">Shows</option>
-            <option value="Anime">Anime</option>
-            <option value="Documentary">Docs</option>
           </select>
-
-          <select id="filterService" class="pill" style="padding:8px 10px;">
-            <option value="All">All services</option>
-            <option value="Netflix">Netflix</option>
-            <option value="Hulu">Hulu</option>
-            <option value="Max">Max</option>
-            <option value="Disney+">Disney+</option>
-            <option value="Prime Video">Prime Video</option>
-            <option value="Apple TV+">Apple TV+</option>
-            <option value="Peacock">Peacock</option>
-            <option value="Paramount+">Paramount+</option>
-            <option value="YouTube">YouTube</option>
-            <option value="Other">Other</option>
-          </select>
-
           <select id="filterWho" class="pill" style="padding:8px 10px;">
             <option value="All">Both</option>
-            <option value="me">Me (red)</option>
-            <option value="her">Anika (pink)</option>
+            <option value="me">Anzum</option>
+            <option value="her">Anika</option>
           </select>
         </div>
       </div>
 
       <ul id="list"></ul>
       <div id="empty" class="empty" style="display:none;">
-        Nothing here yet. Add your first movie/show 👀
+        Nothing here yet — search for a movie or show above 👀
       </div>
     </div>
   </div>
 
-  <!-- Firebase (same style as your Bingo board): Google Login + Firestore realtime sync -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
     import {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithPopup,
-      signOut,
-      onAuthStateChanged
+      getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
     import {
-      getFirestore,
-      collection,
-      addDoc,
-      query,
-      orderBy,
-      onSnapshot,
-      serverTimestamp,
-      doc,
-      updateDoc,
-      deleteDoc,
-      getDocs,
-      writeBatch
+      getFirestore, collection, addDoc, query, orderBy, onSnapshot,
+      serverTimestamp, doc, updateDoc, deleteDoc, getDocs, writeBatch
     } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
-    /**********************
-     * FIREBASE CONFIG (from your Bingo board)
-     **********************/
     const firebaseConfig = {
       apiKey: "AIzaSyCcbJqHpYRPFGgmgBh5grAhR5aDniDZRyg",
       authDomain: "tanzum-5c20b.firebaseapp.com",
@@ -477,234 +601,281 @@
       measurementId: "G-FF64TZSZ2V"
     };
 
-    // SAME room for both of you (change if you want)
     const ROOM_ID = "tanzum-watchlist";
+    const TMDB_KEY = "9df9235369e9f3b268d90c08cc7894a8";
+    const TMDB_IMG = "https://image.tmdb.org/t/p/w200";
 
-    /**********************
-     * INIT
-     **********************/
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    /**********************
-     * DOM
-     **********************/
-    const $ = (id) => document.getElementById(id);
+    const $ = id => document.getElementById(id);
 
-    const titleEl = $("title");
-    const typeEl = $("type");
-    const serviceEl = $("service");
-    const whoEl = $("who");
-    const notesEl = $("notes");
-
-    const addBtn = $("addBtn");
-    const clearBtn = $("clearBtn");
-    const randomBtn = $("randomBtn");
-
-    const listEl = $("list");
-    const emptyEl = $("empty");
-
-    const searchEl = $("search");
-    const filterTypeEl = $("filterType");
-    const filterServiceEl = $("filterService");
-    const filterWhoEl = $("filterWho");
-
+    const searchInput   = $("searchInput");
+    const searchResults = $("searchResults");
+    const selectedPreview = $("selectedPreview");
+    const spPoster      = $("spPoster");
+    const spTitle       = $("spTitle");
+    const spType        = $("spType");
+    const spProviders   = $("spProviders");
+    const spClear       = $("spClear");
+    const whoEl         = $("who");
+    const notesEl       = $("notes");
+    const addBtn        = $("addBtn");
+    const clearBtn      = $("clearBtn");
+    const randomBtn     = $("randomBtn");
+    const listEl        = $("list");
+    const emptyEl       = $("empty");
+    const filterSearch  = $("filterSearch");
+    const filterTypeEl  = $("filterType");
+    const filterWhoEl   = $("filterWho");
     const randomResultEl = $("randomResult");
-    const syncStatusEl = $("syncStatus");
+    const syncStatusEl  = $("syncStatus");
+    const loginBtn      = $("loginBtn");
+    const logoutBtn     = $("logoutBtn");
 
-    const loginBtn = $("loginBtn");
-    const logoutBtn = $("logoutBtn");
-
-    function setStatus(msg){ if(syncStatusEl) syncStatusEl.textContent = msg || ""; }
-
-    /**********************
-     * State
-     **********************/
     let currentItems = [];
     let unsubscribe = null;
     let currentUser = null;
+    let selectedItem = null;
+    let searchTimeout = null;
 
-    /**********************
-     * Helpers
-     **********************/
+    function setStatus(msg){ if(syncStatusEl) syncStatusEl.textContent = msg || ""; }
+
     function escapeHtml(str){
-      return String(str ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
+      return String(str ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;")
+        .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
     }
 
     function formatDate(ts){
-      const d = new Date(ts);
-      return d.toLocaleString([], { month:"short", day:"numeric", year:"numeric" });
+      return new Date(ts).toLocaleString([], { month:"short", day:"numeric", year:"numeric" });
     }
 
-    function showRandomResult(text){
-      randomResultEl.style.display = "block";
-      randomResultEl.textContent = text;
+    /* ========================
+       TMDB SEARCH
+    ======================== */
+    async function tmdbSearch(query){
+      const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=1`;
+      const res = await fetch(url);
+      const data = await res.json();
+      return (data.results || [])
+        .filter(r => r.media_type === "movie" || r.media_type === "tv")
+        .slice(0, 8);
     }
 
-    function setEnabled(enabled){
-      addBtn.disabled = !enabled;
-      clearBtn.disabled = !enabled;
-      randomBtn.disabled = currentItems.filter(x => !x.watched).length === 0; // still usable after data loads
-      titleEl.disabled = !enabled;
-      typeEl.disabled = !enabled;
-      serviceEl.disabled = !enabled;
-      whoEl.disabled = !enabled;
-      notesEl.disabled = !enabled;
+    async function tmdbProviders(id, mediaType){
+      const url = `https://api.themoviedb.org/3/${mediaType}/${id}/watch/providers?api_key=${TMDB_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const us = data.results?.US;
+      if(!us) return [];
+
+      const seen = new Set();
+      const providers = [];
+      for(const list of [us.flatrate, us.ads, us.free, us.rent, us.buy]){
+        if(!list) continue;
+        for(const p of list){
+          if(!seen.has(p.provider_name)){
+            seen.add(p.provider_name);
+            providers.push(p.provider_name);
+          }
+        }
+      }
+      return providers;
     }
 
-    function getFiltered(items){
-      const q = searchEl.value.trim().toLowerCase();
-      const ft = filterTypeEl.value;
-      const fs = filterServiceEl.value;
-      const fw = filterWhoEl.value;
-
-      return items.filter(item => {
-        const title = (item.title || "").toLowerCase();
-        const notes = (item.notes || "").toLowerCase();
-        const service = item.service || "Other";
-
-        const matchesQ = !q || title.includes(q) || notes.includes(q);
-        const matchesType = (ft === "All") || (item.type === ft);
-        const matchesService = (fs === "All") || (service === fs);
-        const matchesWho = (fw === "All") || (item.who === fw);
-
-        return matchesQ && matchesType && matchesService && matchesWho;
-      });
-    }
-
-    function render(){
-      const filtered = getFiltered(currentItems);
-      listEl.innerHTML = "";
-
-      emptyEl.style.display = filtered.length === 0 ? "block" : "none";
-
-      for(const item of filtered){
-        const li = document.createElement("li");
-        const whoClass = item.who === "me" ? "by-me" : "by-her";
-        const watchedClass = item.watched ? "watched" : "";
-        li.className = `item ${whoClass} ${watchedClass}`;
-
-        li.innerHTML = `
-          <div class="meta">
-            <div class="name">${escapeHtml(item.title)}</div>
-            <div class="sub">
-              <span class="tag">${escapeHtml(item.type)}</span>
-              <span class="tag">${escapeHtml(item.service || "Other")}</span>
-              <span class="tag">${item.who === "me" ? "You" : "Anika"}</span>
-              <span class="tag">${formatDate(item.createdAt)}</span>
-              ${item.watched ? `<span class="tag">✅ watched</span>` : ``}
-            </div>
-            ${item.notes ? `<div class="notes">${escapeHtml(item.notes)}</div>` : ``}
-          </div>
-          <div class="right">
-            <button class="small" data-action="watched" data-id="${escapeHtml(item.id)}" ${!currentUser ? "disabled" : ""}>
-              ${item.watched ? "Unwatch" : "Watched"}
-            </button>
-            <button class="small" data-action="delete" data-id="${escapeHtml(item.id)}" ${!currentUser ? "disabled" : ""}>Delete</button>
-          </div>
-        `;
-
-        listEl.appendChild(li);
+    function showSearchResults(results){
+      if(results.length === 0){
+        searchResults.innerHTML = `<div class="sr-empty">No results found</div>`;
+        searchResults.classList.add("open");
+        return;
       }
 
-      // random button should work once we have data
-      randomBtn.disabled = (currentItems.filter(x => !x.watched).length === 0);
+      searchResults.innerHTML = results.map(r => {
+        const title = r.title || r.name || "Untitled";
+        const year = (r.release_date || r.first_air_date || "").slice(0, 4);
+        const type = r.media_type === "movie" ? "Movie" : "Show";
+        const poster = r.poster_path
+          ? `<img class="sr-poster" src="${TMDB_IMG}${r.poster_path}" alt="" loading="lazy">`
+          : `<div class="sr-no-poster">🎬</div>`;
+
+        return `
+          <div class="sr-item" data-id="${r.id}" data-type="${r.media_type}"
+               data-title="${escapeHtml(title)}" data-year="${year}"
+               data-poster="${r.poster_path || ""}">
+            ${poster}
+            <div class="sr-info">
+              <div class="sr-title">${escapeHtml(title)}</div>
+              <div class="sr-meta">${type} ${year ? "· " + year : ""}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      searchResults.classList.add("open");
     }
 
-    /**********************
-     * Firestore paths
-     * We store items in: watchlistRooms/{ROOM_ID}/items/{autoId}
-     **********************/
+    searchInput.addEventListener("input", () => {
+      const q = searchInput.value.trim();
+      if(q.length < 2){
+        searchResults.classList.remove("open");
+        return;
+      }
+
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(async () => {
+        searchResults.innerHTML = `<div class="sr-loading">Searching...</div>`;
+        searchResults.classList.add("open");
+        try{
+          const results = await tmdbSearch(q);
+          showSearchResults(results);
+        }catch(e){
+          searchResults.innerHTML = `<div class="sr-empty">Search failed — try again</div>`;
+        }
+      }, 350);
+    });
+
+    searchResults.addEventListener("click", async (e) => {
+      const item = e.target.closest(".sr-item");
+      if(!item) return;
+
+      const id = item.dataset.id;
+      const mediaType = item.dataset.type;
+      const title = item.dataset.title;
+      const year = item.dataset.year;
+      const posterPath = item.dataset.poster;
+
+      searchResults.classList.remove("open");
+      searchInput.value = title;
+
+      spTitle.textContent = title;
+      spType.textContent = `${mediaType === "movie" ? "Movie" : "Show"}${year ? " · " + year : ""}`;
+
+      if(posterPath){
+        spPoster.src = TMDB_IMG + posterPath;
+        spPoster.style.display = "block";
+      } else {
+        spPoster.style.display = "none";
+      }
+
+      spProviders.innerHTML = `<span class="sp-no-providers">Loading streaming info...</span>`;
+      selectedPreview.classList.add("show");
+
+      const providers = await tmdbProviders(id, mediaType);
+
+      if(providers.length > 0){
+        spProviders.innerHTML = providers.map(p =>
+          `<span class="sp-provider">${escapeHtml(p)}</span>`
+        ).join("");
+      } else {
+        spProviders.innerHTML = `<span class="sp-no-providers">No US streaming info available</span>`;
+      }
+
+      selectedItem = {
+        tmdbId: Number(id),
+        mediaType,
+        title,
+        year,
+        type: mediaType === "movie" ? "Movie" : "Show",
+        posterPath: posterPath || "",
+        providers
+      };
+
+      addBtn.disabled = !currentUser;
+    });
+
+    document.addEventListener("click", (e) => {
+      if(!searchResults.contains(e.target) && e.target !== searchInput){
+        searchResults.classList.remove("open");
+      }
+    });
+
+    spClear.addEventListener("click", () => {
+      selectedItem = null;
+      selectedPreview.classList.remove("show");
+      searchInput.value = "";
+      addBtn.disabled = true;
+    });
+
+    /* ========================
+       FIRESTORE
+    ======================== */
     function itemsCollectionRef(){
       return collection(db, "watchlistRooms", ROOM_ID, "items");
     }
 
     function startRealtime(){
       if(unsubscribe) unsubscribe();
-
       const qy = query(itemsCollectionRef(), orderBy("createdAt", "desc"));
 
       unsubscribe = onSnapshot(qy, (snap) => {
         currentItems = snap.docs.map(d => {
           const v = d.data();
-          const createdAtMs = v.createdAt?.toDate ? v.createdAt.toDate().getTime() : Date.now();
           return {
             id: d.id,
             title: v.title,
-            type: v.type,
-            service: v.service || "Other",
+            type: v.type || "Movie",
+            service: v.service || "",
+            providers: v.providers || [],
+            posterPath: v.posterPath || "",
             who: v.who,
             notes: v.notes || "",
             watched: !!v.watched,
-            createdAt: createdAtMs
+            createdAt: v.createdAt?.toDate ? v.createdAt.toDate().getTime() : Date.now()
           };
         });
-
-        setStatus(`Sync: ON • live • room "${ROOM_ID}"`);
+        setStatus(`Synced · room "${ROOM_ID}"`);
         render();
       }, (err) => {
         console.error(err);
-        setStatus("Sync error (check Firestore rules)");
+        setStatus("Sync error");
       });
     }
 
-    /**********************
-     * Actions
-     **********************/
     async function addItem(){
-      const title = titleEl.value.trim();
-      if(!title) return;
+      if(!selectedItem || !currentUser) return;
 
       const payload = {
-        title,
-        type: typeEl.value,
-        service: serviceEl.value,
+        title: selectedItem.title,
+        type: selectedItem.type,
+        posterPath: selectedItem.posterPath,
+        providers: selectedItem.providers,
+        tmdbId: selectedItem.tmdbId,
         who: whoEl.value,
         notes: notesEl.value.trim(),
         watched: false,
         createdAt: serverTimestamp(),
-        // optional: helpful for debugging/auditing
-        addedByUid: currentUser?.uid || null,
-        addedByEmail: currentUser?.email || null
+        addedByUid: currentUser.uid,
+        addedByEmail: currentUser.email
       };
 
       try{
         await addDoc(itemsCollectionRef(), payload);
-        titleEl.value = "";
+        selectedItem = null;
+        selectedPreview.classList.remove("show");
+        searchInput.value = "";
         notesEl.value = "";
-        titleEl.focus();
+        addBtn.disabled = true;
+        searchInput.focus();
       }catch(err){
         console.error(err);
-        setStatus("Add failed (check rules)");
+        setStatus("Add failed");
       }
     }
 
     async function toggleWatched(id){
       const item = currentItems.find(x => x.id === id);
       if(!item) return;
-
       try{
         await updateDoc(doc(db, "watchlistRooms", ROOM_ID, "items", id), { watched: !item.watched });
-      }catch(err){
-        console.error(err);
-        setStatus("Update failed (check rules)");
-      }
+      }catch(err){ console.error(err); }
     }
 
     async function deleteItem(id){
       try{
         await deleteDoc(doc(db, "watchlistRooms", ROOM_ID, "items", id));
-      }catch(err){
-        console.error(err);
-        setStatus("Delete failed (check rules)");
-      }
+      }catch(err){ console.error(err); }
     }
 
     async function clearAll(){
@@ -714,109 +885,146 @@
         snap.forEach(d => batch.delete(d.ref));
         await batch.commit();
         randomResultEl.style.display = "none";
-      }catch(err){
-        console.error(err);
-        setStatus("Clear failed (check rules)");
-      }
+      }catch(err){ console.error(err); }
     }
 
-    function randomPick(){
-      const picks = getFiltered(currentItems).filter(x => !x.watched);
-      if(picks.length === 0){
-        showRandomResult("No unwatched items match your filters 👀");
-        return;
-      }
-      const pick = picks[Math.floor(Math.random() * picks.length)];
-      showRandomResult(`Tonight: ${pick.title} (${pick.type}) on ${pick.service || "Other"} ✨`);
+    /* ========================
+       RENDER LIST
+    ======================== */
+    function getFiltered(items){
+      const q = filterSearch.value.trim().toLowerCase();
+      const ft = filterTypeEl.value;
+      const fw = filterWhoEl.value;
+
+      return items.filter(item => {
+        const title = (item.title || "").toLowerCase();
+        const notes = (item.notes || "").toLowerCase();
+        const matchesQ = !q || title.includes(q) || notes.includes(q);
+        const matchesType = ft === "All" || item.type === ft;
+        const matchesWho = fw === "All" || item.who === fw;
+        return matchesQ && matchesType && matchesWho;
+      });
     }
 
-    /**********************
-     * Auth
-     **********************/
-    async function doLogin(){
-      try{
-        await signInWithPopup(auth, provider);
-      }catch(err){
-        console.error(err);
-        setStatus("Sign-in blocked (popup?)");
+    function render(){
+      const filtered = getFiltered(currentItems);
+      listEl.innerHTML = "";
+      emptyEl.style.display = filtered.length === 0 ? "block" : "none";
+
+      for(const item of filtered){
+        const li = document.createElement("li");
+        const whoClass = item.who === "me" ? "by-me" : "by-her";
+        const watchedClass = item.watched ? "watched" : "";
+        li.className = `item ${whoClass} ${watchedClass}`;
+
+        const posterHtml = item.posterPath
+          ? `<img class="item-poster" src="${TMDB_IMG}${escapeHtml(item.posterPath)}" alt="" loading="lazy">`
+          : `<div class="item-no-poster">🎬</div>`;
+
+        const providerTags = (item.providers || []).length > 0
+          ? (item.providers || []).slice(0, 3).map(p =>
+              `<span class="tag">${escapeHtml(p)}</span>`
+            ).join("") + (item.providers.length > 3 ? `<span class="tag">+${item.providers.length - 3}</span>` : "")
+          : (item.service ? `<span class="tag">${escapeHtml(item.service)}</span>` : "");
+
+        li.innerHTML = `
+          ${posterHtml}
+          <div class="meta">
+            <div class="name">${escapeHtml(item.title)}</div>
+            <div class="sub">
+              <span class="tag">${escapeHtml(item.type)}</span>
+              ${providerTags}
+              <span class="tag">${item.who === "me" ? "Anzum" : "Anika"}</span>
+            </div>
+            ${item.notes ? `<div class="notes">${escapeHtml(item.notes)}</div>` : ""}
+          </div>
+          <div class="right">
+            <button class="small" data-action="watched" data-id="${escapeHtml(item.id)}" ${!currentUser ? "disabled" : ""}>
+              ${item.watched ? "Unwatch" : "✓ Watched"}
+            </button>
+            <button class="small" data-action="delete" data-id="${escapeHtml(item.id)}" ${!currentUser ? "disabled" : ""}>×</button>
+          </div>
+        `;
+        listEl.appendChild(li);
       }
+
+      randomBtn.disabled = currentItems.filter(x => !x.watched).length === 0;
     }
 
-    async function doLogout(){
-      try{
-        await signOut(auth);
-      }catch(err){
-        console.error(err);
-        setStatus("Sign-out failed");
-      }
-    }
+    /* ========================
+       AUTH
+    ======================== */
+    loginBtn.addEventListener("click", async () => {
+      try{ await signInWithPopup(auth, provider); }
+      catch(err){ setStatus("Sign-in blocked"); }
+    });
 
-    loginBtn.addEventListener("click", doLogin);
-    logoutBtn.addEventListener("click", doLogout);
+    logoutBtn.addEventListener("click", async () => {
+      try{ await signOut(auth); }
+      catch(err){ setStatus("Sign-out failed"); }
+    });
 
     onAuthStateChanged(auth, (user) => {
       currentUser = user || null;
-
       if(currentUser){
         loginBtn.style.display = "none";
         logoutBtn.style.display = "inline-block";
-        setEnabled(true);
-        setStatus("Signed in • syncing…");
+        addBtn.disabled = !selectedItem;
+        clearBtn.disabled = false;
+        searchInput.disabled = false;
+        setStatus("Signed in · syncing…");
         startRealtime();
-      }else{
+      } else {
         loginBtn.style.display = "inline-block";
         logoutBtn.style.display = "none";
         currentItems = [];
         render();
-        setEnabled(false);
+        addBtn.disabled = true;
+        clearBtn.disabled = true;
+        searchInput.disabled = false;
         setStatus("Sign in to sync + add items");
         if(unsubscribe){ unsubscribe(); unsubscribe = null; }
       }
     });
 
-    /**********************
-     * Events
-     **********************/
+    /* ========================
+       EVENTS
+    ======================== */
     addBtn.addEventListener("click", addItem);
-
-    titleEl.addEventListener("keydown", (e) => {
-      if(e.key === "Enter") addItem();
-    });
-
     clearBtn.addEventListener("click", async () => {
-      const ok = confirm("Clear the entire watchlist?");
-      if(!ok) return;
-      await clearAll();
+      if(confirm("Clear the entire watchlist?")) await clearAll();
     });
 
-    randomBtn.addEventListener("click", randomPick);
+    randomBtn.addEventListener("click", () => {
+      const picks = getFiltered(currentItems).filter(x => !x.watched);
+      if(picks.length === 0){
+        randomResultEl.textContent = "No unwatched items match your filters 👀";
+        randomResultEl.style.display = "block";
+        return;
+      }
+      const pick = picks[Math.floor(Math.random() * picks.length)];
+      const where = (pick.providers || []).length > 0
+        ? ` on ${pick.providers[0]}` : "";
+      randomResultEl.textContent = `Tonight: ${pick.title} (${pick.type})${where} ✨`;
+      randomResultEl.style.display = "block";
+    });
 
     listEl.addEventListener("click", async (e) => {
       const btn = e.target.closest("button");
-      if(!btn) return;
-
-      const id = btn.getAttribute("data-id");
-      const action = btn.getAttribute("data-action");
-
-      if(!currentUser) return;
-
-      if(action === "watched"){
-        await toggleWatched(id);
-      }
-      if(action === "delete"){
-        const ok = confirm("Delete this item?");
-        if(!ok) return;
-        await deleteItem(id);
-      }
+      if(!btn || !currentUser) return;
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      if(action === "watched") await toggleWatched(id);
+      if(action === "delete" && confirm("Delete this item?")) await deleteItem(id);
     });
 
-    [searchEl, filterTypeEl, filterServiceEl, filterWhoEl].forEach(el => {
+    [filterSearch, filterTypeEl, filterWhoEl].forEach(el => {
       el.addEventListener("input", render);
       el.addEventListener("change", render);
     });
 
-    // initial UI state
-    setEnabled(false);
+    addBtn.disabled = true;
+    clearBtn.disabled = true;
     setStatus("Loading…");
   </script>
 </body>
