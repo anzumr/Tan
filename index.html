@@ -887,222 +887,13 @@
       backdrop-filter: blur(14px);
     }
 
-    .thread-card{
-      width: 100%;
-      max-width: 400px;
-      height: min(660px, 86vh);
-      background: rgba(20,16,28,0.9);
-      backdrop-filter: blur(24px);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 28px;
-      overflow: hidden;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
-      display: flex;
-      flex-direction: column;
-      font-family: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      transform: translateY(12px) scale(0.97);
-      opacity: 0;
-      animation: threadIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-    }
-
-    @keyframes threadIn {
-      to { transform: translateY(0) scale(1); opacity: 1; }
-    }
-
-    .thread-top{
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      padding: 16px 18px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      color:#fff;
-    }
-
-    .thread-name{
-      font-weight: 600;
-      font-size: 15px;
-      letter-spacing: 0.01em;
-    }
-
-    .thread-close{
-      border:none;
-      background: rgba(255,255,255,0.08);
-      color: rgba(255,255,255,0.7);
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      cursor:pointer;
-      font-size: 14px;
-      transition: background 0.2s ease;
-    }
-
-    .thread-close:hover { background: rgba(255,255,255,0.14); }
-
-    .thread-body{
-      padding: 16px;
-      display:flex;
-      flex-direction: column;
-      gap: 10px;
-      overflow-y: auto;
-    }
-
-    .bubble-row{ display:flex; width:100%; }
-    .bubble-row.right{ justify-content: flex-end; }
-
-    .bubble{
-      max-width: 88%;
-      border-radius: 22px;
-      padding: 12px 12px 14px;
-      line-height: 1.4;
-      font-size: 14px;
-      color: #fff;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-    }
-
-    .bubble-blue{
-      background: linear-gradient(180deg, rgba(10,132,255,0.95), rgba(0,100,230,0.95));
-    }
-
-    .bubble-img-wrap{
-      width: 100%;
-      border-radius: 18px;
-      overflow:hidden;
-      border: 1px solid rgba(255,255,255,0.12);
-      margin-bottom: 10px;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .bubble-img-wrap::after{
-      content: "Tap to view";
-      position: absolute;
-      right: 10px;
-      bottom: 10px;
-      font-size: 10px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.1);
-      opacity: 0.85;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-    }
-
-    .bubble-img{
-      width: 100%;
-      height: 240px;
-      object-fit: cover;
-      display:block;
-    }
-
-    .bubble-text{ white-space: normal; line-height: 1.45; }
-
-    .thread-time{
-      margin-top: 8px;
-      text-align:center;
-      font-size: 11px;
-      opacity: 0.5;
-      color:#fff;
-      font-weight: 400;
-    }
-
-    /* -------- FULLSCREEN PHOTO VIEWER -------- */
-
-    #photoViewer {
-      display: none;
-      z-index: 80;
-      background: rgba(0,0,0,0.9);
-      backdrop-filter: blur(16px);
-      padding: 10px;
-    }
-
-    .viewer-top {
-      position: fixed;
-      top: 14px;
-      left: 14px;
-      right: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      z-index: 81;
-      pointer-events: none;
-    }
-
-    .viewer-pill {
-      pointer-events: auto;
-      background: rgba(255,255,255,0.08);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(255,255,255,0.8);
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-family: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      font-size: 12px;
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
-      user-select: none;
-      font-weight: 500;
-    }
-
-    .viewer-close {
-      pointer-events: auto;
-      width: 36px;
-      height: 36px;
-      border-radius: 999px;
-      cursor: pointer;
-      background: rgba(255,255,255,0.1);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(255,255,255,0.8);
-      font-size: 16px;
-      transition: background 0.2s ease;
-    }
-
-    .viewer-close:hover { background: rgba(255,255,255,0.18); }
-
-    .viewer-stage {
-      width: 100%;
-      height: 100%;
-      display: grid;
-      place-items: center;
-    }
-
-    .viewer-img {
-      max-width: min(980px, 96vw);
-      max-height: 86vh;
-      width: auto;
-      height: auto;
-      border-radius: 16px;
-      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
-      transform: scale(0.97);
-      opacity: 0;
-      animation: viewerIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-      user-select: none;
-      -webkit-user-drag: none;
-      cursor: zoom-in;
-    }
-
-    @keyframes viewerIn {
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .viewer-img.zoomed {
-      max-width: none;
-      max-height: none;
-      width: min(1400px, 160vw);
-      height: auto;
-      cursor: zoom-out;
-    }
+    /* (thread card and photo viewer removed) */
 
     /* small screens */
     @media (max-width: 480px) {
       .lock-time { font-size: 60px; }
       .lock-widgets { flex-direction: column; }
       .survey-card { padding: 24px 18px 28px; }
-      .bubble-img{ height: 200px; }
-      .viewer-img.zoomed { width: 180vw; }
       #couplePhoto { width: 130px; height: 130px; border-radius: 30px; }
     }
   </style>
@@ -1134,27 +925,6 @@
             <div class="widget-title">Virgo Horoscope</div>
             <div id="horoscopeMain" class="widget-main">Soft focus on the details today.</div>
             <div id="horoscopeSub" class="widget-sub">You deserve gentleness, especially from yourself.</div>
-          </div>
-        </div>
-
-        <!-- iMessage-style notification from Anzum (tap to open) -->
-        <div class="ios-notification" id="iosNotification" role="button" tabindex="0" aria-label="Open message">
-          <div class="notif-icon">💬</div>
-          <div class="notif-content">
-            <div class="notif-header">
-              <span class="notif-app">Messages</span>
-              <span class="notif-time">now</span>
-            </div>
-            <div class="notif-from">Anzum 🧔🏽‍♂️💕</div>
-
-            <div class="notif-text" style="display:flex; gap:10px; align-items:center;">
-              <img
-                src="photobooth-strip.jpg"
-                alt="Photobooth strip preview"
-                style="width:46px;height:46px;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.25);flex:0 0 auto;"
-              />
-              <span id="notifMessage">These photos feel like a quiet confession 🤍</span>
-            </div>
           </div>
         </div>
 
@@ -1193,50 +963,6 @@
       <button id="pwBtn" class="pw-button">Continue</button>
       <div id="pwError" class="pw-error"></div>
       <div style="margin-top:10px;font-size:12px;opacity:0.9;">(I’ll tell you the password 🫶)</div>
-    </div>
-  </div>
-
-  <!-- TEXT THREAD OVERLAY (opens from lock-screen notification) -->
-  <div id="textThreadOverlay" class="overlay">
-    <div class="thread-card" role="dialog" aria-label="Message thread">
-      <div class="thread-top">
-        <div class="thread-name">Anzum 🧔🏽‍♂️💕</div>
-        <button id="closeThread" class="thread-close" aria-label="Close">✕</button>
-      </div>
-
-      <div class="thread-body">
-        <div class="bubble-row right">
-          <div class="bubble bubble-blue">
-            <div class="bubble-img-wrap" id="photoBubble" title="Tap to expand">
-              <img src="photobooth-strip.jpg" alt="Photobooth strip" class="bubble-img">
-            </div>
-            <div class="bubble-text">
-          These photos feel like a quiet confession 🤍<br><br>
-In the top and bottom rows, it’s us. Soft, playful, safe in each other’s arms 🫶✨<br><br>
-But the middle row is where my heart gets caught. Watching you slowly step into the frame feels exactly like the way you stepped into my life 📸💞<br><br>
-Every time you come closer, the world gets quieter. Every time you touch me, I feel chosen 🌙💫<br><br>
-Loving you feels like coming home in ways I didn’t know I was missing 🏡❤️<br><br>
-And once you’re here, I never want to imagine a moment without you ♾️💗<br><br>
-You don’t just stand beside me. You live in my heart 💘
-
-            </div>
-          </div>
-        </div>
-
-        <div class="thread-time">Delivered</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- FULLSCREEN PHOTO VIEWER -->
-  <div id="photoViewer" class="overlay" aria-label="Photo viewer">
-    <div class="viewer-top">
-      <div class="viewer-pill">💬 From Anzum • Photobooth</div>
-      <button id="closeViewer" class="viewer-close" aria-label="Close photo">✕</button>
-    </div>
-
-    <div class="viewer-stage">
-      <img id="viewerImg" class="viewer-img" src="photobooth-strip.jpg" alt="Photobooth strip full view">
     </div>
   </div>
 
@@ -1458,15 +1184,8 @@ You don’t just stand beside me. You live in my heart 💘
     const photosButton = null;
     const bingoButton  = null;
 
-    // Thread + Viewer
-    const iosNotification = document.getElementById("iosNotification");
-    const textThreadOverlay = document.getElementById("textThreadOverlay");
-    const closeThread = document.getElementById("closeThread");
-    const photoBubble = document.getElementById("photoBubble");
-
-    const photoViewer = document.getElementById("photoViewer");
-    const closeViewer = document.getElementById("closeViewer");
-    const viewerImg = document.getElementById("viewerImg");
+    const iosNotification = null;
+    const textThreadOverlay = null;
 
     // ------- UPDATE PHOTOS BADGE FROM STORED COUNT -------
 
@@ -1914,96 +1633,6 @@ You don’t just stand beside me. You live in my heart 💘
       }
     }
     document.addEventListener("DOMContentLoaded", handleHashNavigation);
-
-    // ------- iMESSAGE THREAD OPEN/CLOSE -------
-
-    function openThread() {
-      if (!textThreadOverlay) return;
-      textThreadOverlay.style.display = "flex";
-      pulseFish();
-      // prevent background scroll on mobile
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeThreadOverlay() {
-      if (!textThreadOverlay) return;
-      textThreadOverlay.style.display = "none";
-      document.body.style.overflow = "";
-    }
-
-    if (iosNotification) {
-      iosNotification.style.cursor = "pointer";
-      iosNotification.addEventListener("click", (e) => {
-        e.stopPropagation();
-        openThread();
-      });
-      iosNotification.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") openThread();
-      });
-    }
-
-    if (closeThread) closeThread.addEventListener("click", closeThreadOverlay);
-
-    if (textThreadOverlay) {
-      textThreadOverlay.addEventListener("click", (e) => {
-        if (e.target === textThreadOverlay) closeThreadOverlay();
-      });
-    }
-
-    // ------- PHOTO VIEWER OPEN/CLOSE + ZOOM -------
-
-    function openViewer() {
-      if (!photoViewer) return;
-      photoViewer.style.display = "flex";
-      if (viewerImg) viewerImg.classList.remove("zoomed");
-      pulseFish();
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeViewerFn() {
-      if (!photoViewer) return;
-      photoViewer.style.display = "none";
-      if (viewerImg) viewerImg.classList.remove("zoomed");
-      // keep thread open; just restore overflow if thread is closed too
-      if (!textThreadOverlay || textThreadOverlay.style.display !== "flex") {
-        document.body.style.overflow = "";
-      }
-    }
-
-    if (photoBubble) {
-      photoBubble.addEventListener("click", (e) => {
-        e.stopPropagation();
-        openViewer();
-      });
-    }
-
-    if (closeViewer) closeViewer.addEventListener("click", closeViewerFn);
-
-    if (photoViewer) {
-      photoViewer.addEventListener("click", (e) => {
-        // click outside image closes
-        if (e.target === photoViewer) closeViewerFn();
-      });
-    }
-
-    if (viewerImg) {
-      // click image toggles zoom (simple)
-      viewerImg.addEventListener("click", (e) => {
-        e.stopPropagation();
-        viewerImg.classList.toggle("zoomed");
-      });
-    }
-
-    // ESC closes viewer first, then thread
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        if (photoViewer && photoViewer.style.display === "flex") {
-          closeViewerFn();
-        } else if (textThreadOverlay && textThreadOverlay.style.display === "flex") {
-          closeThreadOverlay();
-        }
-      }
-    });
 
     // ------- 🐹 HAMSTER PET LOGIC (name + animations + chase betta) -------
 
