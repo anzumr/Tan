@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Date Ideas 💕</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg1:#f0a0d4;
+      --bg2:#c4a8f0;
+      --card: rgba(255,255,255,0.72);
+      --ink:#2a1a2e;
+      --me:#e03030;
+      --her:#e060a8;
+      --muted:#7a6080;
+      --border: rgba(80,20,60,0.1);
+      --rounded: 24px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      color: var(--ink);
+      min-height:100vh;
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(255,200,235,0.5) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(200,170,255,0.4) 0%, transparent 50%),
+        linear-gradient(145deg, #f8d0e8 0%, #e0c0f0 40%, #d4b8f0 70%, #f0c8e0 100%);
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap{ max-width: 720px; margin: 0 auto; }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .title{
+      font-family: "SF Pro Display", Inter, sans-serif;
+      font-size: 30px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #3a1a3e;
+    }
+
+    .back{
+      text-decoration:none;
+      background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(255,255,255,0.5);
+      padding: 10px 16px;
+      border-radius: 999px;
+      color: #3a1a3e;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .back:hover{ transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+
+    .card{
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.45);
+      border-radius: var(--rounded);
+      padding: 22px;
+      box-shadow: 0 12px 48px rgba(80,20,60,0.12);
+      backdrop-filter: blur(20px);
+    }
+
+    /* --- ADD FORM --- */
+    .add-form{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: end;
+    }
+    @media (max-width: 520px){
+      .add-form{ grid-template-columns: 1fr; }
+    }
+
+    label{
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      display:block;
+      margin-bottom: 6px;
+    }
+
+    input, select{
+      width:100%;
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 14px;
+      outline: none;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(6px);
+      color: var(--ink);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input:focus, select:focus{
+      border-color: rgba(240,160,212,0.5);
+      box-shadow: 0 0 0 3px rgba(240,160,212,0.15);
+    }
+
+    /* --- ACTIONS --- */
+    .actions{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .actions-left{ display: flex; gap: 8px; flex-wrap: wrap; }
+    .actions-right{ display: flex; align-items: center; gap: 10px; }
+
+    button{
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font-weight: 600;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-add{
+      background: linear-gradient(135deg, #e46b8e, #d44080);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(228,107,142,0.3);
+    }
+    .btn-add:hover:not(:disabled){
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(228,107,142,0.4);
+    }
+    .btn-add:disabled{ opacity: 0.5; cursor: not-allowed; }
+
+    .btn-clear{
+      background: rgba(255,255,255,0.5);
+      color: var(--ink);
+      border: 1px solid rgba(80,20,60,0.1);
+    }
+    .btn-clear:hover{ background: rgba(255,255,255,0.75); }
+
+    .btn-random{
+      background: linear-gradient(135deg, #c4a8f0, #a880e0);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(168,128,224,0.3);
+      font-size: 14px;
+      padding: 12px 22px;
+    }
+    .btn-random:hover:not(:disabled){
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(168,128,224,0.4);
+    }
+    .btn-random:disabled{ opacity: 0.5; cursor: not-allowed; }
+
+    .btn-auth{
+      background: rgba(255,255,255,0.5);
+      color: var(--muted);
+      border: 1px solid rgba(80,20,60,0.08);
+      font-size: 12px;
+      padding: 8px 14px;
+    }
+    .btn-auth:hover{ background: rgba(255,255,255,0.75); }
+
+    .status{
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* --- RANDOM RESULT --- */
+    .random-result{
+      display: none;
+      margin-top: 18px;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(200,170,255,0.25), rgba(240,160,212,0.2));
+      border: 1px solid rgba(200,170,255,0.4);
+      border-radius: 20px;
+      text-align: center;
+      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .random-result.show{ display: block; }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .random-emoji{ font-size: 36px; margin-bottom: 8px; }
+    .random-name{
+      font-family: "SF Pro Display", Inter, sans-serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: #3a1a3e;
+      margin-bottom: 4px;
+    }
+    .random-meta{
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* --- SPINNER (random animation) --- */
+    .spinner-overlay{
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      backdrop-filter: blur(6px);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+    }
+    .spinner-overlay.show{ display: flex; }
+
+    .spinner-card{
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(20px);
+      border-radius: 28px;
+      padding: 36px 44px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(80,20,60,0.2);
+      border: 1px solid rgba(255,255,255,0.6);
+      min-width: 260px;
+    }
+    .spinner-label{
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 14px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .spinner-name{
+      font-family: "SF Pro Display", Inter, sans-serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: #3a1a3e;
+      min-height: 36px;
+      transition: opacity 0.08s ease;
+    }
+    .spinner-cat{
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* --- FILTERS --- */
+    .list-head{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 22px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filters{ display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .pill{
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(80,20,60,0.1);
+      background: rgba(255,255,255,0.5);
+      font-size: 13px;
+      transition: border-color 0.2s ease;
+    }
+    .pill:focus-within{ border-color: rgba(240,160,212,0.5); }
+    .pill input{
+      border: none;
+      background: transparent;
+      padding: 0;
+      width: 100px;
+      font-size: 13px;
+      outline: none;
+      backdrop-filter: none;
+    }
+    select.pill{
+      width: auto;
+      display: inline-block;
+      padding: 8px 10px;
+    }
+
+    /* --- LIST --- */
+    ul{ list-style: none; padding: 0; margin-top: 6px; }
+
+    .date-item{
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s ease;
+    }
+    .date-item:last-child{ border-bottom: none; }
+
+    .date-icon{
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .cat-movies    .date-icon{ background: linear-gradient(135deg, #ffe0e8, #f0c0d8); }
+    .cat-food      .date-icon{ background: linear-gradient(135deg, #ffe8d0, #f0d8b0); }
+    .cat-activity  .date-icon{ background: linear-gradient(135deg, #d8f0e0, #c0e8d0); }
+    .cat-shopping  .date-icon{ background: linear-gradient(135deg, #e0e8ff, #c8d8f8); }
+    .cat-concert   .date-icon{ background: linear-gradient(135deg, #f0e0ff, #e0c8f8); }
+    .cat-travel    .date-icon{ background: linear-gradient(135deg, #d8f0f8, #b8e0f0); }
+    .cat-chill     .date-icon{ background: linear-gradient(135deg, #f8e8f0, #e8d8e8); }
+    .cat-other     .date-icon{ background: linear-gradient(135deg, #e8e8e8, #d8d8d8); }
+
+    .date-info{ flex: 1; min-width: 0; }
+    .date-name{
+      font-weight: 600;
+      font-size: 15px;
+      line-height: 1.3;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .date-meta{
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .tag{
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .tag-cat{
+      background: rgba(200,170,255,0.2);
+      color: #6a4090;
+    }
+    .tag-me{
+      background: rgba(224,48,48,0.1);
+      color: var(--me);
+    }
+    .tag-her{
+      background: rgba(224,96,168,0.1);
+      color: var(--her);
+    }
+
+    .date-actions{
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .date-actions button{
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      padding: 0;
+      font-size: 15px;
+      background: rgba(255,255,255,0.5);
+      border: 1px solid rgba(80,20,60,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease;
+    }
+    .date-actions button:hover{ background: rgba(255,255,255,0.85); }
+
+    .done-item{ opacity: 0.5; }
+    .done-item .date-name{ text-decoration: line-through; }
+
+    .empty{
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 480px){
+      .topbar{ flex-direction: column; align-items: flex-start; gap: 8px; }
+      .title{ font-size: 24px; }
+      .actions{ flex-direction: column; align-items: stretch; }
+      .actions-left, .actions-right{ justify-content: center; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <h1 class="title">Date Ideas 💕</h1>
+      <a class="back" href="index.html#questions">← Back</a>
+    </div>
+
+    <div class="card">
+      <div class="add-form">
+        <div>
+          <label for="category">Category</label>
+          <select id="category">
+            <option value="movies">🎬 Movies</option>
+            <option value="food">🍽️ Food</option>
+            <option value="activity">🎯 Activity</option>
+            <option value="shopping">🛍️ Shopping</option>
+            <option value="concert">🎵 Concert</option>
+            <option value="travel">✈️ Travel</option>
+            <option value="chill">🏠 Chill</option>
+            <option value="other">✨ Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="dateName">Date idea</label>
+          <input id="dateName" placeholder="e.g., Picnic in Central Park" autocomplete="off" />
+        </div>
+        <div>
+          <label for="who">Suggested by</label>
+          <select id="who">
+            <option value="me">Anzum</option>
+            <option value="her">Anika</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:end;">
+          <button type="button" class="btn-add" id="addBtn">Add idea</button>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top:14px;">
+        <div class="actions-left">
+          <button type="button" class="btn-random" id="randomBtn">🎲 Pick a random date!</button>
+          <button type="button" class="btn-clear" id="clearBtn">Clear all</button>
+        </div>
+        <div class="actions-right">
+          <button type="button" class="btn-auth" id="loginBtn">Sign in</button>
+          <button type="button" class="btn-auth" id="logoutBtn" style="display:none;">Sign out</button>
+          <div id="syncStatus" class="status">Loading…</div>
+        </div>
+      </div>
+
+      <div id="randomResult" class="random-result">
+        <div class="random-emoji" id="randomEmoji">🎉</div>
+        <div class="random-name" id="randomName"></div>
+        <div class="random-meta" id="randomMeta"></div>
+      </div>
+
+      <div class="list-head">
+        <div style="font-weight:800;">Your date ideas</div>
+        <div class="filters">
+          <div class="pill">
+            🔎 <input id="filterSearch" placeholder="Search..." />
+          </div>
+          <select id="filterCat" class="pill" style="padding:8px 10px;">
+            <option value="All">All categories</option>
+            <option value="movies">🎬 Movies</option>
+            <option value="food">🍽️ Food</option>
+            <option value="activity">🎯 Activity</option>
+            <option value="shopping">🛍️ Shopping</option>
+            <option value="concert">🎵 Concert</option>
+            <option value="travel">✈️ Travel</option>
+            <option value="chill">🏠 Chill</option>
+            <option value="other">✨ Other</option>
+          </select>
+          <select id="filterWho" class="pill" style="padding:8px 10px;">
+            <option value="All">Both</option>
+            <option value="me">Anzum</option>
+            <option value="her">Anika</option>
+          </select>
+        </div>
+      </div>
+
+      <ul id="list"></ul>
+      <div id="empty" class="empty" style="display:none;">
+        No date ideas yet — add one above! 💡
+      </div>
+    </div>
+  </div>
+
+  <!-- SPINNER OVERLAY -->
+  <div id="spinnerOverlay" class="spinner-overlay">
+    <div class="spinner-card">
+      <div class="spinner-label">Choosing your date...</div>
+      <div class="spinner-name" id="spinnerName">🎲</div>
+      <div class="spinner-cat" id="spinnerCat"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+    import {
+      getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+    import {
+      getFirestore, collection, addDoc, query, orderBy, onSnapshot,
+      serverTimestamp, doc, updateDoc, deleteDoc, getDocs, writeBatch
+    } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCcbJqHpYRPFGgmgBh5grAhR5aDniDZRyg",
+      authDomain: "tanzum-5c20b.firebaseapp.com",
+      projectId: "tanzum-5c20b",
+      storageBucket: "tanzum-5c20b.firebasestorage.app",
+      messagingSenderId: "301887898670",
+      appId: "1:301887898670:web:6b0d43c29148ea9b830bbf",
+      measurementId: "G-FF64TZSZ2V"
+    };
+
+    const ROOM_ID = "tanzum-dates";
+
+    const CATEGORY_EMOJI = {
+      movies: "🎬", food: "🍽️", activity: "🎯", shopping: "🛍️",
+      concert: "🎵", travel: "✈️", chill: "🏠", other: "✨"
+    };
+
+    const CATEGORY_LABEL = {
+      movies: "Movies", food: "Food", activity: "Activity", shopping: "Shopping",
+      concert: "Concert", travel: "Travel", chill: "Chill", other: "Other"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    const $ = id => document.getElementById(id);
+
+    const categoryEl    = $("category");
+    const dateNameEl    = $("dateName");
+    const whoEl         = $("who");
+    const addBtn        = $("addBtn");
+    const clearBtn      = $("clearBtn");
+    const randomBtn     = $("randomBtn");
+    const listEl        = $("list");
+    const emptyEl       = $("empty");
+    const filterSearch  = $("filterSearch");
+    const filterCatEl   = $("filterCat");
+    const filterWhoEl   = $("filterWho");
+    const randomResultEl= $("randomResult");
+    const syncStatusEl  = $("syncStatus");
+    const loginBtn      = $("loginBtn");
+    const logoutBtn     = $("logoutBtn");
+    const spinnerOverlay= $("spinnerOverlay");
+    const spinnerName   = $("spinnerName");
+    const spinnerCat    = $("spinnerCat");
+
+    let currentItems = [];
+    let unsubscribe = null;
+    let currentUser = null;
+
+    function setStatus(msg){ if(syncStatusEl) syncStatusEl.textContent = msg || ""; }
+
+    function escapeHtml(str){
+      return String(str ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;")
+        .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+    }
+
+    /* ========================
+       AUTH
+    ======================== */
+    onAuthStateChanged(auth, user => {
+      currentUser = user;
+      if(user){
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "";
+        setStatus("Syncing...");
+        subscribe();
+      } else {
+        loginBtn.style.display = "";
+        logoutBtn.style.display = "none";
+        if(unsubscribe){ unsubscribe(); unsubscribe = null; }
+        currentItems = [];
+        render();
+        setStatus("Sign in to sync");
+      }
+    });
+
+    loginBtn.onclick = () => signInWithPopup(auth, provider).catch(e => {
+      if(e.code !== "auth/popup-closed-by-user") alert(e.message);
+    });
+    logoutBtn.onclick = () => signOut(auth);
+
+    /* ========================
+       FIRESTORE
+    ======================== */
+    function getCol(){ return collection(db, "rooms", ROOM_ID, "items"); }
+
+    function subscribe(){
+      if(unsubscribe) unsubscribe();
+      const q = query(getCol(), orderBy("createdAt","desc"));
+      unsubscribe = onSnapshot(q, snap => {
+        currentItems = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        render();
+        setStatus(`${currentItems.length} idea${currentItems.length !== 1 ? "s" : ""}`);
+      }, err => {
+        console.error(err);
+        setStatus("Error syncing");
+      });
+    }
+
+    /* ========================
+       ADD
+    ======================== */
+    addBtn.onclick = async () => {
+      const name = dateNameEl.value.trim();
+      if(!name){ dateNameEl.focus(); return; }
+      if(!currentUser){ alert("Sign in first!"); return; }
+
+      try{
+        await addDoc(getCol(), {
+          name,
+          category: categoryEl.value,
+          who: whoEl.value,
+          done: false,
+          createdAt: serverTimestamp(),
+          addedByUid: currentUser.uid,
+          addedByEmail: currentUser.email
+        });
+        dateNameEl.value = "";
+      } catch(e){
+        alert("Error adding: " + e.message);
+      }
+    };
+
+    dateNameEl.addEventListener("keydown", e => {
+      if(e.key === "Enter") addBtn.click();
+    });
+
+    /* ========================
+       CLEAR ALL
+    ======================== */
+    clearBtn.onclick = async () => {
+      if(!currentUser){ alert("Sign in first!"); return; }
+      if(!currentItems.length) return;
+      if(!confirm("Delete all date ideas?")) return;
+
+      const batch = writeBatch(db);
+      const snap = await getDocs(getCol());
+      snap.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+    };
+
+    /* ========================
+       RANDOM PICK
+    ======================== */
+    randomBtn.onclick = () => {
+      const undone = currentItems.filter(i => !i.done);
+      if(!undone.length){
+        randomResultEl.classList.add("show");
+        $("randomEmoji").textContent = "😅";
+        $("randomName").textContent = "No ideas left!";
+        $("randomMeta").textContent = "Add some date ideas first";
+        return;
+      }
+
+      spinnerOverlay.classList.add("show");
+      let ticks = 0;
+      const totalTicks = 20;
+      const interval = setInterval(() => {
+        const rand = undone[Math.floor(Math.random() * undone.length)];
+        spinnerName.textContent = rand.name;
+        spinnerCat.textContent = (CATEGORY_EMOJI[rand.category] || "✨") + " " + (CATEGORY_LABEL[rand.category] || rand.category);
+        ticks++;
+        if(ticks >= totalTicks){
+          clearInterval(interval);
+          const winner = undone[Math.floor(Math.random() * undone.length)];
+          spinnerName.textContent = winner.name;
+          spinnerCat.textContent = (CATEGORY_EMOJI[winner.category] || "✨") + " " + (CATEGORY_LABEL[winner.category] || winner.category);
+
+          setTimeout(() => {
+            spinnerOverlay.classList.remove("show");
+            randomResultEl.classList.add("show");
+            $("randomEmoji").textContent = CATEGORY_EMOJI[winner.category] || "🎉";
+            $("randomName").textContent = winner.name;
+            $("randomMeta").textContent = (CATEGORY_LABEL[winner.category] || winner.category)
+              + " · suggested by " + (winner.who === "her" ? "Anika" : "Anzum");
+          }, 600);
+        }
+      }, 80);
+    };
+
+    /* ========================
+       FILTERS
+    ======================== */
+    filterSearch.addEventListener("input", render);
+    filterCatEl.addEventListener("change", render);
+    filterWhoEl.addEventListener("change", render);
+
+    /* ========================
+       RENDER LIST
+    ======================== */
+    function render(){
+      const q = filterSearch.value.toLowerCase();
+      const cat = filterCatEl.value;
+      const who = filterWhoEl.value;
+
+      const filtered = currentItems.filter(item => {
+        if(q && !item.name.toLowerCase().includes(q)) return false;
+        if(cat !== "All" && item.category !== cat) return false;
+        if(who !== "All" && item.who !== who) return false;
+        return true;
+      });
+
+      if(!filtered.length){
+        listEl.innerHTML = "";
+        emptyEl.style.display = "";
+        return;
+      }
+
+      emptyEl.style.display = "none";
+      listEl.innerHTML = filtered.map(item => {
+        const emoji = CATEGORY_EMOJI[item.category] || "✨";
+        const catLabel = CATEGORY_LABEL[item.category] || item.category;
+        const whoLabel = item.who === "her" ? "Anika" : "Anzum";
+        const whoClass = item.who === "her" ? "tag-her" : "tag-me";
+        const doneClass = item.done ? "done-item" : "";
+
+        return `
+          <li class="date-item cat-${escapeHtml(item.category)} ${doneClass}" data-id="${item.id}">
+            <div class="date-icon">${emoji}</div>
+            <div class="date-info">
+              <div class="date-name">${escapeHtml(item.name)}</div>
+              <div class="date-meta">
+                <span class="tag tag-cat">${catLabel}</span>
+                <span class="tag ${whoClass}">${whoLabel}</span>
+              </div>
+            </div>
+            <div class="date-actions">
+              <button title="${item.done ? 'Mark not done' : 'Mark as done'}" data-action="toggle" data-id="${item.id}">
+                ${item.done ? "↩️" : "✅"}
+              </button>
+              <button title="Delete" data-action="delete" data-id="${item.id}">🗑️</button>
+            </div>
+          </li>`;
+      }).join("");
+    }
+
+    /* ========================
+       LIST ACTIONS (delegation)
+    ======================== */
+    listEl.addEventListener("click", async e => {
+      const btn = e.target.closest("[data-action]");
+      if(!btn || !currentUser) return;
+
+      const id = btn.dataset.id;
+      const action = btn.dataset.action;
+      const ref = doc(db, "rooms", ROOM_ID, "items", id);
+
+      if(action === "toggle"){
+        const item = currentItems.find(i => i.id === id);
+        if(item) await updateDoc(ref, { done: !item.done });
+      } else if(action === "delete"){
+        await deleteDoc(ref);
+      }
+    });
+  </script>
+</body>
+</html>
